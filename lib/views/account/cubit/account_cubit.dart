@@ -19,12 +19,12 @@ class AccountCubit extends Cubit<AccountState> {
 
 
   void loadingAccount() async{
-    _authRepository.user.listen((user) async {
-      if(user != UserModel.empty){
-        print(user.toJson());
+    _authRepository.user.listen((uid) async {
+      if(uid != ""){
+        UserModel userModel = await _authRepository.getInfoUserFirebase(uid);
         emit(state.copyWith(status: StatusType.loading));
         await Future<void>.delayed(const Duration(seconds: 2));
-        emit(state.copyWith(status: StatusType.loaded,yourUser: demo_listUser[0]));
+        emit(state.copyWith(status: StatusType.loaded,yourUser: userModel));
       }else{
         emit(state.copyWith(status: StatusType.init,yourUser: UserModel.empty));
       }

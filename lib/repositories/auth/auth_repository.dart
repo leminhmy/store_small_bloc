@@ -14,11 +14,19 @@ class AuthRepository {
 
   var currentUser = UserModel.empty;
 
-  Stream<UserModel> get user{
+  Stream<String> get user {
 
     return _firebaseAuth.authStateChanges().map((firebaseUser) {
+      return firebaseUser!.uid;
+    });
+  }
+  /*Stream<UserModel> get user {
+
+    return _firebaseAuth.authStateChanges().map((firebaseUser)  {
+
       UserModel user = firebaseUser == null ? UserModel.empty : firebaseUser.toUser;
-      try{
+      currentUser = user;
+      /*try{
          _firebaseFiretore.collection("users").doc(firebaseUser!.uid).get().then((value)
         {
           user = UserModel.fromMap(value.data());
@@ -27,9 +35,24 @@ class AuthRepository {
         });
       }catch(e){
         print("error $e");
-      }
+      }*/
       return user;
     });
+  }*/
+
+  Future<UserModel> getInfoUserFirebase(String uid)  async {
+    UserModel user = UserModel.empty;
+    try{
+     await _firebaseFiretore.collection("users").doc(uid).get().then((value)
+      {
+        user = UserModel.fromMap(value.data());
+        print("user ${user.toJson()}");
+        currentUser = user;
+      });
+    }catch(e){
+      print("error $e");
+    }
+    return user;
   }
 
 
