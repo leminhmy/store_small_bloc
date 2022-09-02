@@ -7,18 +7,17 @@ import '../../widget/big_text.dart';
 
 class MessagesCart extends StatelessWidget {
   const MessagesCart({
-    Key? key, required this.messagesModel, required this.userId,
+    Key? key, required this.messagesModel,
   }) : super(key: key);
 
   final MessagesModel messagesModel;
-  final int userId;
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: size.height * 0.01),
-      child: Row(
+      child: Container()/*Row(
         mainAxisAlignment: messagesModel.idSend == userId?MainAxisAlignment.end:MainAxisAlignment.start,
         children: [
           Column(
@@ -52,7 +51,7 @@ class MessagesCart extends StatelessWidget {
             ],
           ),
         ],
-      ),
+      ),*/,
     );
   }
 }

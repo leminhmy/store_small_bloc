@@ -5,8 +5,11 @@ import 'big_text.dart';
 
 class SwitchAndTitle extends StatefulWidget {
   const SwitchAndTitle({
-    Key? key,
+    Key? key, required this.value,this.defaultValue = false,
   }) : super(key: key);
+
+  final ValueChanged<bool> value;
+  final bool defaultValue;
 
 
   @override
@@ -17,7 +20,15 @@ class _SwitchAndTitleState extends State<SwitchAndTitle> {
   bool releasedProduct = false;
 
   @override
+  void initState() {
+    // TODO: implement initState
+    releasedProduct = widget.defaultValue;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    widget.value(releasedProduct);
     return SwitchListTile(
         title: BigText(
           text: "Released",

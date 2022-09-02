@@ -205,7 +205,7 @@ class _SliderBannerState extends State<SliderBanner> {
 
   buildDotsIndicator() {
     return DotsIndicator(
-      dotsCount: shoesProduct.length,
+      dotsCount: shoesProduct.isEmpty?1:shoesProduct.length,
       position: _currPageValue,
       decorator: DotsDecorator(
         activeColor: AppColors.mainColor,

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:store_small_bloc/views/products/cubit/filter_product_cubit.dart';
 
 import '../../../../app/utils/colors.dart';
 import '../../../../models/product.dart';
@@ -186,12 +188,13 @@ class _BuildBodyState extends State<BuildBody> {
       child: Column(
         children: [
 
-          EditTextForm(controller: name,
-              onSave: (value) => name.text = value!,
+          EditTextForm(
+              onSave: (save) => name.text = save!,
+              controller: name,
               labelText: "Name"),
           SizedBox(height: size.height * 0.01),
           EditTextForm(
-              onSave: (value) => subTitle.text = value!,
+              onSave: (save) => subTitle.text = save!,
               controller: subTitle,
               minLines: 2,
               labelText: "SubTitle"),
@@ -199,15 +202,15 @@ class _BuildBodyState extends State<BuildBody> {
             height: size.height * 0.01,
           ),
           EditTextForm(
-              onSave: (value) => price.text = value!,
-              controller: price,
+              onSave: (save) => price.text = save!,
+            controller: price,
               textInputType: TextInputType.number,
               labelText: "Price"),
           SizedBox(
             height: size.height * 0.01,
           ),
           EditTextForm(
-            onSave: (value) => description.text = value!,
+            onSave: (save) => description.text = save!,
             controller: description,
             minLines: 6,
             labelText: "Description",
@@ -216,13 +219,34 @@ class _BuildBodyState extends State<BuildBody> {
           SizedBox(
             height: size.height * 0.01,
           ),
-          DropButtonFromFieldWidget(),
-          PickerColorWidget(),
+          BlocBuilder<FilterProductCubit, FilterProductState>(
+            builder: (context, state) {
+              return DropButtonFromFieldWidget(
+                shoesTypeListModel: state.listShoesType,
+                valueSelected: (String valueSelected){
+
+                },
+              );
+            }
+          ),
+          PickerColorWidget(
+            listColors: (List<String> listColors){
+              print(listColors);
+            },
+          ),
           SizedBox(
             height: size.height * 0.01,
           ),
-          PickerSizeWidget(),
-          SwitchAndTitle(),
+          PickerSizeWidget(
+            listSize: (List<int> listSize){
+              print(listSize);
+            },
+          ),
+          SwitchAndTitle(
+            value: (bool value){
+              print(value);
+            },
+          ),
           GestureDetector(
               onTap: () {
                 /* updateProduct(shoesController);*/

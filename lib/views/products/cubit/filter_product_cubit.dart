@@ -21,8 +21,8 @@ class FilterProductCubit extends Cubit<FilterProductState> {
       : _categoryRepository = categoryRepository, _productRepository = productRepository,
         super(const FilterProductState());
 
-
   List<ProductsModel> listProduct = [];
+
 
   Future<void> loadingProducts()async{
     try{
@@ -38,6 +38,7 @@ class FilterProductCubit extends Cubit<FilterProductState> {
   }
 
   Future<void> filterProducts(int indexFilter)async{
+
     try{
       if(indexFilter ==0){
         emit(state.copyWith(status: StatusType.loading,));
@@ -69,12 +70,10 @@ class FilterProductCubit extends Cubit<FilterProductState> {
     });
   }
   Future<void> getAllProduct() async {
-    _categorySubscription?.cancel();
-    _categorySubscription = _productRepository.getAllProducts().listen((event) {
-      print('call stream ');
-      listProduct = event;
-      emit(state.copyWith(status: StatusType.loaded,listProduct: event));
-    });
+   await _productRepository.getAllProducts().then((value) {
+     emit(state.copyWith(status: StatusType.loaded,listProduct: value));
+     listProduct = value;
+   });
   }
 
 }

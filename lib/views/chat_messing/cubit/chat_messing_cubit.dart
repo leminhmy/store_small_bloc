@@ -7,7 +7,7 @@ import '../../../models/messages.dart';
 part 'chat_messing_state.dart';
 
 class ChatMessingCubit extends Cubit<ChatMessingState> {
-  ChatMessingCubit() : super(ChatMessingState(listMess: demo_messages));
+  ChatMessingCubit() : super(ChatMessingState(listMess: []));
 
 
 }

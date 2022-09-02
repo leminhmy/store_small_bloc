@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:store_small_bloc/views/widget/empty_box.dart';
 
 import '../../../../app/utils/app_variable.dart';
 import '../../../../app/utils/colors.dart';
 import '../../../../models/product.dart';
 import '../../../app/router/route_name.dart';
+import '../../edit_product/view/edit_product_page.dart';
 import '../../widget/big_text.dart';
 import '../../widget/small_text.dart';
-import 'edit_product.dart';
 
 
 
@@ -18,9 +19,7 @@ class PopularProducts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    final DraggableScrollableController _dragScrollController =
-    DraggableScrollableController();
-    double maxChildeSize = 0.3;
+
     return Padding(
       padding:
       EdgeInsets.only(right:size.height * 0.02, left: size.height * 0.02),
@@ -36,20 +35,11 @@ class PopularProducts extends StatelessWidget {
           SizedBox(
             height: size.height * 0.01,
           ),
-          Column(
+          listShoesProduct.isNotEmpty?Column(
             children: List.generate(listShoesProduct.length, (index) {
               return GestureDetector(
                 onLongPress: () {
-                  _openBottomSheet(
-                    context,
-                    _dragScrollController,
-                    maxChildeSize,
-                    listShoesProduct,
-                    index,
-                  );
-
-
-
+                  ShowBottomSheetEditProduct.openBottomSheet(context: context, product: listShoesProduct[index]);
                 },
                 onTap: () => Navigator.pushNamed(
                     context, RouteName.shoesDetail,
@@ -181,7 +171,7 @@ class PopularProducts extends StatelessWidget {
                 ),
               );
             }),
-          )
+          ): const EmptyBoxWidget(),
         ],
       ),
     );
@@ -190,36 +180,3 @@ class PopularProducts extends StatelessWidget {
 
 }
 
-Future<void> _openBottomSheet(BuildContext context,DraggableScrollableController dragScrollController,double maxChildeSize,List<ProductsModel> listShoesProduct,int index){
-  Widget makeDismissible(
-      {required Widget child, required BuildContext context}) =>
-      GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => Navigator.of(context).pop(),
-        child: GestureDetector(
-          onTap: () {},
-          child: child,
-        ),
-      );
-  return showModalBottomSheet(
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      context: context,
-      builder: (context) {
-        return makeDismissible(
-            context: context,
-            child: DraggableScrollableSheet(
-                maxChildSize: 0.9,
-                minChildSize: 0.1,
-                initialChildSize: maxChildeSize,
-                controller: dragScrollController,
-                builder: (context, controller) {
-                  return EditProduct(controller: controller, context: context,
-                    shoesProduct: listShoesProduct[index],onTapEditText: (){
-                      dragScrollController.animateTo(maxChildeSize = 0.9,
-                          duration: const Duration(milliseconds: 200),
-                          curve: Curves.ease);
-                    }, );
-                }));
-      }).whenComplete(() => {maxChildeSize = 0.9});
-}

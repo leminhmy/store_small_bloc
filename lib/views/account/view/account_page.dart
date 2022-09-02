@@ -24,6 +24,7 @@ class _AccountPageState extends State<AccountPage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    print("reuibld account");
     return Stack(
       children: [
         Scaffold(
@@ -38,8 +39,12 @@ class _AccountPageState extends State<AccountPage> {
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: size.height * 0.026),
+              actions: [
+                IconButton(onPressed: () =>  context.read<AccountCubit>().logoutRequested(), icon: const Icon(Icons.login_outlined)),
+              ],
             ),
             body: BlocBuilder<AccountCubit, AccountState>(
+                buildWhen: (previous, current) => previous.yourUser != current.yourUser,
                 builder: (context, state) {
               return Column(
                 children: [

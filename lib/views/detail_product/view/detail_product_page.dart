@@ -5,6 +5,7 @@ import 'package:store_small_bloc/models/product.dart';
 import 'package:store_small_bloc/views/detail_product/cubit/detail_product_cubit.dart';
 
 import '../../cart/cubit/cart_cubit.dart';
+import '../../widget/show_snack_bar.dart';
 import '../components/bottom_bar_widget.dart';
 import '../components/image_banner.dart';
 import '../components/info_product.dart';
@@ -48,9 +49,9 @@ class DetailProductPage extends StatelessWidget {
             ),
             bottomNavigationBar: BottomBarWidget(
               onPressCheckOut: () async{
+                ShowSnackBarWidget.showSnackCustom(context: context);
                 CartModel cartModel = context.read<DetailProductCubit>().cartOption();
-                List<CartModel> listCart =  await context.read<CartCubit>().addCart(cartModel);
-                print(listCart[0].toJson());
+                await context.read<CartCubit>().addCart(cartModel);
 
               },
             ),

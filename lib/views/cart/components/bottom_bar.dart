@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:store_small_bloc/repositories/auth/auth_repository.dart';
+import 'package:store_small_bloc/views/account/cubit/account_cubit.dart';
+import 'package:store_small_bloc/views/google_map/google_map.dart';
 
 import '../../../app/utils/colors.dart';
 import '../../widget/big_text.dart';
@@ -12,6 +15,7 @@ class BottomBarCart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    print("rebuild bottom bar cart");
     return Container(
       height: size.height * 0.12,
       padding: EdgeInsets.symmetric(
@@ -28,30 +32,32 @@ class BottomBarCart extends StatelessWidget {
         children: [
           //quantity
           BlocBuilder<CartCubit, CartState>(
-              buildWhen: (previous, current) =>
-              previous.listCart[0] != current.listCart [0],
               builder: (context,state) {
                 print('rebuild bottom');
-                return SizedBox();
+                return ButtonBorderRadius(
+                    widget: BigText(
+                      text: "\$ ${context.read<CartCubit>().getTotalPriceListCart()}",
+
+                      color: Colors.black,
+                    ));
               }
           ),
-          ButtonBorderRadius(
-              widget: BigText(
-                text: "\$9999",
-                color: Colors.black,
-              )),
           //addToCard
-          GestureDetector(
-            onTap: () {
-
-            },
-            child: ButtonBorderRadius(
-              widget: BigText(
-                text: "Check out",
-                color: Colors.white,
-              ),
-              colorBackground: AppColors.mainColor,
-            ),
+          BlocBuilder<GoogleMapCubit, GoogleMapState>(
+            builder: (context, state) {
+              return GestureDetector(
+                onTap: () {
+                  context.read<CartCubit>().checkOutOrder(state.address);
+                },
+                child: ButtonBorderRadius(
+                  widget: BigText(
+                    text: "Check out",
+                    color: Colors.white,
+                  ),
+                  colorBackground: AppColors.mainColor,
+                ),
+              );
+            }
           )
         ],
       ),

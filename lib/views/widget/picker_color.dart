@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:store_small_bloc/app/utils/app_variable.dart';
 
 import '../../app/utils/colors.dart';
 import 'big_text.dart';
 class PickerColorWidget extends StatefulWidget {
-  const PickerColorWidget({Key? key}) : super(key: key);
+  const PickerColorWidget({Key? key, required this.listColors, this.listColorDefault = const []}) : super(key: key);
+
+  final ValueChanged<List<String>> listColors;
+  final List<String>? listColorDefault;
 
   @override
   State<PickerColorWidget> createState() => _PickerColorWidgetState();
@@ -12,11 +16,18 @@ class PickerColorWidget extends StatefulWidget {
 
 class _PickerColorWidgetState extends State<PickerColorWidget> {
   List<String> listColor = [];
-  Color color = Colors.red;
+  Color color = const Color(0xffd11508);
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    listColor.addAll(widget.listColorDefault!);
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    widget.listColors(listColor);
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
@@ -77,19 +88,16 @@ class _PickerColorWidgetState extends State<PickerColorWidget> {
                                 text: "SELECT",
                               ),
                               onPressed: () {
-                                Navigator.of(context).pop();
-                                String colorString = color
-                                    .toString(); // Color(0x12345678)
-                                String valueColor = colorString
-                                    .split('(')[1]
-                                    .split(')')[0];
+                                String valueColor = color.toString().split('(')[1].split(')')[0];
                                 if (checkWasValue(
                                     listColor, valueColor)) {
-                                  print('error selected color');
+                                  AppVariable.showErrorSnackBar(context, "Color already exists");
                                 } else {
                                   listColor.add(valueColor);
                                   setState(() {});
                                 }
+                                Navigator.of(context).pop();
+
                               },
                             ),
                           ],
@@ -119,11 +127,8 @@ class _PickerColorWidgetState extends State<PickerColorWidget> {
   }
 
   bool checkWasValue(List<String> listString, String valueString) {
-    final index = listString.indexOf(valueString);
-    if (index == -1) {
-      return false;
-    }
-    return true;
+    return listString.contains(valueString);
+
   }
 
   buildColorPicker() {

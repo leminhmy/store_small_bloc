@@ -2,7 +2,8 @@ class UserModel {
   String id;
   String? name;
   String? email;
-  String? phone;
+  String? address;
+  int? phone;
   int? status;
   String? image;
   String? tokenMessages;
@@ -13,6 +14,7 @@ class UserModel {
      this.email,
      this.phone,
      this.status,
+    this.address,
      this.image,
      this.tokenMessages,
   });
@@ -27,11 +29,14 @@ class UserModel {
         name: json['name'],
         email: json['email'],
         phone: json['phone'],
+         address: json['address'],
         status: json['status'],
         image: json['image'],
         tokenMessages: json['token_messages'],
     );
   }
+
+
 
   factory UserModel.fromMap(map){
     return UserModel(
@@ -40,6 +45,7 @@ class UserModel {
       name: map['name'],
       phone: map['phone'],
       status: map['status'],
+      address: map['address'],
       image: map['image'],
       tokenMessages: map['token_messages'],
     );
@@ -52,6 +58,7 @@ class UserModel {
       "email": email,
       "phone": phone,
       "status": status,
+      "address": address,
       "image": image,
       "token_messages": tokenMessages,
     };
@@ -59,8 +66,8 @@ class UserModel {
 }
 
 List<UserModel> demo_listUser = [
-  UserModel(id: "1", name: "name1", email: "email@gmail.com", phone: "123456879", status: 1, image: 'assets/images/person_icon.jpg', tokenMessages: ""),
-  UserModel(id: "2", name: "name2", email: "email@gmail.com", phone: "123456879", status: 1, image: 'assets/images/person_icon.jpg', tokenMessages: ""),
-  UserModel(id: "3", name: "name3", email: "email@gmail.com", phone: "123456879", status: 1, image: 'assets/images/person_icon.jpg', tokenMessages: ""),
-  UserModel(id: "4", name: "name4", email: "email@gmail.com", phone: "123456879", status: 1, image: 'assets/images/person_icon.jpg', tokenMessages: ""),
+  UserModel(id: "1", name: "name1", email: "email@gmail.com", phone: 123456879, status: 1, image: 'assets/images/person_icon.jpg', tokenMessages: ""),
+  UserModel(id: "2", name: "name2", email: "email@gmail.com", phone: 123456879, status: 1, image: 'assets/images/person_icon.jpg', tokenMessages: ""),
+  UserModel(id: "3", name: "name3", email: "email@gmail.com", phone: 123456879, status: 1, image: 'assets/images/person_icon.jpg', tokenMessages: ""),
+  UserModel(id: "4", name: "name4", email: "email@gmail.com", phone: 123456879, status: 1, image: 'assets/images/person_icon.jpg', tokenMessages: ""),
 ];

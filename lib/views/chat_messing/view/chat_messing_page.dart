@@ -51,7 +51,7 @@ class _ChatMessingPageState extends State<ChatMessingPage> {
 
                           children: [
                             //get api
-                            ...List.generate(listMessages.length, (index) => MessagesCart(messagesModel: listMessages[index], userId: listMessages[index].idSend!,)),
+                            ...List.generate(listMessages.length, (index) => MessagesCart(messagesModel: listMessages[index],)),
 
 
                             //local send

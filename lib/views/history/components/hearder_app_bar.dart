@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:store_small_bloc/views/history/history.dart';
 
 import '../../../app/utils/colors.dart';
 import '../../widget/big_text.dart';
@@ -32,9 +34,6 @@ class AppBarCustom extends StatelessWidget {
           IconBackgroundBorderRadius(
             icon: Icons.shopping_cart_outlined,
             press: () {
-            /*  Get.toNamed(RouteHelper.getCartPage("cartpage",));
-              // Get.find<CartController>().getItemsTest;
-              // Get.find<CartController>().clear();*/
             },
             size: size.height * 0.02,
           ),

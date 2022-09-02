@@ -5,7 +5,7 @@ class DetailProductState extends Equatable {
   final int size;
   final String color;
   final int current;
-  final int? idCart;
+  final String? idCart;
   final StatusType status;
 
   const DetailProductState(
@@ -22,7 +22,7 @@ class DetailProductState extends Equatable {
   List<Object?> get props => [idCart,productsModel,size,color,current,status];
 
   DetailProductState copyWith(
-      {int? idCart,ProductsModel? productsModel, int? current, String? color, int? size, StatusType? status}) {
+      {String? idCart,ProductsModel? productsModel, int? current, String? color, int? size, StatusType? status}) {
     return DetailProductState(
         productsModel: productsModel ?? this.productsModel,
         size: size ?? this.size,

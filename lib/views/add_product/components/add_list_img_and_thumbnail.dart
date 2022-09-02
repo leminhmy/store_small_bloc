@@ -10,7 +10,9 @@ import '../../widget/button_border_radius.dart';
 import '../../widget/icon_background_border_radius.dart';
 
 class AddListImgAndThumbnail extends StatefulWidget {
-  const AddListImgAndThumbnail({Key? key}) : super(key: key);
+  const AddListImgAndThumbnail({Key? key, required this.listImg}) : super(key: key);
+
+  final ValueChanged<List<XFile>> listImg;
 
   @override
   State<AddListImgAndThumbnail> createState() => _AddListImgAndThumbnailState();
@@ -25,6 +27,9 @@ class _AddListImgAndThumbnailState extends State<AddListImgAndThumbnail> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    if(_imageThumbnail != null){
+      widget.listImg(List.from(_imageList)..add(_imageThumbnail!));
+    }
     return Padding(
       padding: EdgeInsets.symmetric(vertical: size.height * 0.01),
       child: Row(

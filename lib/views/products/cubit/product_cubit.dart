@@ -36,18 +36,15 @@ class ProductCubit extends Cubit<ProductState> {
     try {
       emit(state.copyWith(status: StatusType.loading));
       await Future<void>.delayed(const Duration(seconds: 2));
-      _productSubscription?.cancel();
-      _productSubscription =
-          _productRepository.getAllProducts().listen((event) {
-            // print("call from Stream");
-        return emit(state.copyWith(
-          status: StatusType.loaded,
-          listProductBanner: event,
-        ));
-      });
+      await _productRepository.getAllProducts().then((value) => emit(state.copyWith(
+        status: StatusType.loaded,
+        listProductBanner: value,
+      )));
     } catch (error) {
       log(error.toString());
       emit(state.copyWith(status: StatusType.error));
     }
   }
+
+
 }

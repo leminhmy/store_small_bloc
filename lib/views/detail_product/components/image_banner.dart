@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:store_small_bloc/views/cart/cart.dart';
+import 'package:store_small_bloc/views/widget/show_snack_bar.dart';
 
 import '../../../app/router/route_name.dart';
 import '../../../app/utils/colors.dart';
@@ -57,10 +60,10 @@ class _ImageBannerState extends State<ImageBanner> {
                               bottomRight: Radius.circular(size.height * 0.02),
                               bottomLeft: Radius.circular(size.height * 0.12)),
                           image: DecorationImage(
-                            image: AssetImage(widget.listImg[index]),
+                            image: NetworkImage(widget.listImg[index]),
                             fit: BoxFit.cover,
                           ),
-                          boxShadow: [
+                          boxShadow: const [
                             BoxShadow(
                               color: Colors.grey,
                               offset: Offset(0, 10),
@@ -74,7 +77,8 @@ class _ImageBannerState extends State<ImageBanner> {
             Align(
               alignment: Alignment.bottomRight,
               child: GestureDetector(
-                onTap: () {},
+                onTap: () {
+                },
                 child: Container(
                   margin: EdgeInsets.only(right: size.height * 0.02),
                   child: CircleAvatar(
@@ -120,12 +124,10 @@ class _ImageBannerState extends State<ImageBanner> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     GestureDetector(
-                        onTap: () => Navigator.pushNamed(
-                            context, RouteName.initial,arguments: "",
-                        ),
+                        onTap: () => Navigator.pop(context),
                         child: BorderRadiusWidget(
                             size: size.height * 0.05,
-                            widget: Icon(
+                            widget: const Icon(
                               Icons.arrow_back_ios_outlined,
                               color: Colors.white,
                             ))),
@@ -147,18 +149,30 @@ class _ImageBannerState extends State<ImageBanner> {
                                     Positioned(
                                       top: -size.height * 0.02,
                                       right: -size.height * 0.015,
-                                      child: Container(
-                                        height: size.height * 0.025,
-                                        width: size.height * 0.025,
-                                        alignment: Alignment.center,
-                                        decoration: const BoxDecoration(
-                                            color: Colors.red,
-                                            shape: BoxShape.circle),
-                                        child: BigText(
-                                            text: "1",
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: size.height * 0.016),
+                                      child: BlocBuilder<CartCubit, CartState>(
+                                          buildWhen: (previous, current) => previous.rebuild != current.rebuild,
+                                          builder: (context, state) {
+                                            print("rebuid");
+                                            if(state.listCart.isNotEmpty){
+                                              return Container(
+                                                height: size.height * 0.025,
+                                                width: size.height * 0.025,
+                                                alignment: Alignment.center,
+                                                decoration: const BoxDecoration(
+                                                    color: Colors.red,
+                                                    shape: BoxShape.circle),
+                                                child: BigText(
+                                                    text: "${state.listCart.length}",
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: size.height * 0.016),
+                                              );
+                                            }else{
+                                              return const SizedBox();
+
+                                            }
+
+                                          }
                                       ),
                                     )
                                   ],

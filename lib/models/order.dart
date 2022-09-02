@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'cart_model.dart';
 
 class OrderList {
@@ -23,8 +27,8 @@ class OrderList {
 }
 
 class Order {
-  int? id;
-  int? userId;
+  String? id;
+  String? userId;
   int? orderAmount;
   int? phone;
   int? status;
@@ -40,11 +44,32 @@ class Order {
     this.orderAmount,
     this.phone,
     this.status,
+    this.address,
     this.message,
     this.createdAt,
     this.updatedAt,
     this.orderItems,
   });
+
+  static final empty =  Order();
+  bool get isEmpty => this == Order.empty;
+  bool get isNotEmpty => this != Order.empty;
+
+  factory Order.formSnapshot(DocumentSnapshot snap){
+    Order order = Order(
+      id: snap.id,
+      userId: snap['userId'],
+      orderAmount: snap['orderAmount'],
+      phone: snap['phone'],
+      status: snap['status'],
+      address: snap['address'],
+      message: snap['message'],
+      createdAt: snap['createdAt'],
+      updatedAt: snap['updatedAt'],
+      orderItems: List<Map<String, dynamic>>.from(snap['orderItems']).map((e) => CartModel.fromMap(e)).toList(),
+    );
+    return order;
+  }
 
   Order.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -66,24 +91,27 @@ class Order {
 
   Map<String, dynamic> toJson() {
     return {
-      "id": this.id,
-      "userId": this.userId,
-      "orderAmount": this.orderAmount,
-      "phone": this.phone,
-      "status": this.status,
-      "address": this.address,
-      "message": this.message,
-      "createdAt": this.createdAt,
-      "updatedAt": this.updatedAt,
+      "id": id,
+      "userId": userId,
+      "orderAmount": orderAmount,
+      "phone": phone,
+      "status": status,
+      "address": address,
+      "message": message,
+      "createdAt": createdAt,
+      "updatedAt": updatedAt,
+      "orderItems": orderItems?.map((e) => e.toJson()).toList(),
     };
   }
 }
 
 
+
+
 List<Order> demo_order = [
   Order(
-      id: 1,
-      userId: 1,
+      id: "1",
+      userId: "1",
       orderAmount: 9999,
       phone: 123456879,
       status: 1,
@@ -92,8 +120,8 @@ List<Order> demo_order = [
       updatedAt: "2022-08-11 10:20:10",
       orderItems: [
         CartModel(
-            id: 1,
-            idOrder: 1,
+            id: "1",
+            idOrder: "1",
             idProduct: "1",
             name: "product1",
             img: 'assets/images/a1.jpg',
@@ -105,8 +133,8 @@ List<Order> demo_order = [
             updatedAt: "2022-08-11 10:20:10",
         ),
         CartModel(
-          id: 2,
-          idOrder: 1,
+          id: "2",
+          idOrder: "1",
           idProduct: "1",
           name: "product1",
           img: 'assets/images/a1.jpg',
@@ -118,8 +146,8 @@ List<Order> demo_order = [
           updatedAt: "2022-08-11 10:20:10",
         ),
         CartModel(
-          id: 3,
-          idOrder: 1,
+          id: "3",
+          idOrder: "1",
           idProduct: "1",
           name: "product1",
           img: 'assets/images/a1.jpg',
@@ -132,8 +160,8 @@ List<Order> demo_order = [
         ),
       ]),
   Order(
-      id: 2,
-      userId: 1,
+      id: "2",
+      userId: "1",
       orderAmount: 9999,
       phone: 123456879,
       status: 1,
@@ -141,8 +169,8 @@ List<Order> demo_order = [
       updatedAt: "2022-08-11 10:20:10",
       orderItems: [
         CartModel(
-          id: 1,
-          idOrder: 1,
+          id: "1",
+          idOrder: "1",
           idProduct: "1",
           name: "product1",
           img: 'assets/images/a1.jpg',
@@ -154,8 +182,8 @@ List<Order> demo_order = [
           updatedAt: "2022-08-11 10:20:10",
         ),
         CartModel(
-          id: 2,
-          idOrder: 1,
+          id: "2",
+          idOrder: "1",
           idProduct: "1",
           name: "product1",
           img: 'assets/images/a1.jpg',
@@ -167,8 +195,8 @@ List<Order> demo_order = [
           updatedAt: "2022-08-11 10:20:10",
         ),
         CartModel(
-          id: 3,
-          idOrder: 1,
+          id: "3",
+          idOrder: "1",
           idProduct: "1",
           name: "product1",
           img: 'assets/images/a1.jpg',

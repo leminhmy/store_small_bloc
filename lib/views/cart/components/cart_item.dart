@@ -34,11 +34,18 @@ class CartItem extends StatelessWidget {
                 Get.toNamed(RouteHelper.getShoesDetail(cartModel.productId!, "carthistory"));
               }*/
             },
-            child: ClipRRect(
-                borderRadius: BorderRadius.all(
-                    Radius.circular(size.height * 0.02)),
-                child: Image.asset('assets/images/a2.png',height: size.height/9.38,width: size.height/9.38,)
-            ),
+            child: Container(
+              height: size.height * 0.1,
+              width: size.height * 0.15,
+              decoration: BoxDecoration(
+                color: Colors.green,
+                borderRadius: BorderRadius.circular(size.height * 0.01),
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: NetworkImage(cartModel.img!),
+                )
+              ),
+            )
           ),
           //information product
           Expanded(
@@ -60,7 +67,7 @@ class CartItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BigText(text: cartModel.name!),
+                  BigText(text: cartModel.name!,maxLines: 1,),
                   SizedBox(height: size.height * 0.005,),
                   Row(
                     children: [
@@ -88,6 +95,7 @@ class CartItem extends StatelessWidget {
                             child: Icon(
                               Icons.remove,
                               color: AppColors.signColor,
+                              size: size.height * 0.035,
                             ),
                           ),
                           SizedBox(
@@ -103,6 +111,7 @@ class CartItem extends StatelessWidget {
                           BlocBuilder<CartCubit, CartState>(
                               buildWhen: (previous, current) => current.indexCart == index,
                               builder: (context,state) {
+                                print("da rebuild");
                                 return BigText(text: state.listCart[index].quantity.toString());
                               }
                           ),
@@ -116,6 +125,7 @@ class CartItem extends StatelessWidget {
                             child: Icon(
                               Icons.add,
                               color: AppColors.signColor,
+                              size: size.height * 0.035,
                             ),
                           ),
                         ],

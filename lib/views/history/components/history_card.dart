@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:store_small_bloc/views/history/history.dart';
 
+import '../../../app/router/route_name.dart';
 import '../../../app/utils/app_variable.dart';
 import '../../../app/utils/colors.dart';
 import '../../../models/order.dart';
@@ -7,13 +10,13 @@ import '../../widget/big_text.dart';
 import '../../widget/small_text.dart';
 
 class HistoryCard extends StatelessWidget {
-  const HistoryCard({Key? key, required this.order}) : super(key: key);
+  const HistoryCard({Key? key, required this.order, required this.index}) : super(key: key);
 
   final Order order;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
-    print('rebuild widget');
     Size size = MediaQuery.of(context).size;
     List<Widget> listStatusProduct = [
       Row(
@@ -90,7 +93,7 @@ class HistoryCard extends StatelessWidget {
                       borderRadius:
                       BorderRadius.circular(size.height * 0.005),
                     ),
-                    child: BigText(text: "ID: ${order.id}",color: AppColors.redColor,),
+                    child: BigText(text: "ID: $index",color: AppColors.redColor,),
 
                   ),
                   SizedBox(width: size.height * 0.01),
@@ -119,7 +122,7 @@ class HistoryCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(
                                 size.height * 0.007),
                             image: DecorationImage(
-                                image: AssetImage('assets/images/a1.jpg'),
+                                image: NetworkImage(order.orderItems![index].img!),
                                 fit: BoxFit.cover)),
                       )
                           : Container();
@@ -152,33 +155,41 @@ class HistoryCard extends StatelessWidget {
                             ),
                           ],
                         ),
-                        GestureDetector(
-                          onTap: () {
+                        BlocBuilder<HistoryCubit, HistoryState>(
+                            buildWhen: (previous, current) => previous.checkAdmin!=current.checkAdmin,
+                          builder: (context, state) {
+                            return GestureDetector(
+                              onTap: () {
+                                if(state.checkAdmin){
+                                  Navigator.pushNamed(
+                                      context, RouteName.detailOrderSetting,
+                                      arguments: order);
+                                }else{
+                                  Navigator.pushNamed(
+                                      context, RouteName.detailOrder,
+                                      arguments: order);
+                                }
 
-                           /* // test
-                            List<dynamic> cartModelHistory =
-                            getCartHistoryList[i].orderItems!;
-
-                            Get.toNamed(
-                                RouteHelper.getCartPage("carthistory", index: i));*/
-                          },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: size.height * 0.005,
-                                horizontal: size.height * 0.01),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: AppColors.mainColor,
-                                width: 1,
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: size.height * 0.005,
+                                    horizontal: size.height * 0.01),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: AppColors.mainColor,
+                                    width: 1,
+                                  ),
+                                  borderRadius:
+                                  BorderRadius.circular(size.height * 0.005),
+                                ),
+                                child: SmallText(
+                                  text: "one more",
+                                  color: AppColors.mainColor,
+                                ),
                               ),
-                              borderRadius:
-                              BorderRadius.circular(size.height * 0.005),
-                            ),
-                            child: SmallText(
-                              text: "one more",
-                              color: AppColors.mainColor,
-                            ),
-                          ),
+                            );
+                          }
                         )
                       ],
                     ),

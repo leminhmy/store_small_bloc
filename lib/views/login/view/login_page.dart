@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:store_small_bloc/core/type/enum.dart';
 import 'package:store_small_bloc/views/account/account.dart';
+import 'package:store_small_bloc/views/login/login.dart';
+import 'package:store_small_bloc/views/widget/show_dialog.dart';
+import 'package:store_small_bloc/views/widget/show_snack_bar.dart';
 
+import '../../../app/router/route_name.dart';
 import '../../../app/utils/colors.dart';
 import '../../widget/app_text_field.dart';
 import '../../widget/big_text.dart';
@@ -26,17 +30,25 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
 
     Size size = MediaQuery.of(context).size;
-    return BlocListener<AccountCubit, AccountState>(
-      listener: (context, state){
-        if (state.status == StatusType.init) {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(
-                content: Text(state.errorMessage ?? 'Authentication Failure'),
-              ),
-            );
+    return BlocListener<LoginCubit, LoginState>(
+      listener: (context, state) async {
+        if(state.errorMessage != ""){
+          if(state.errorMessage.contains("Email") || state.errorMessage.contains("Password")){
+            ShowSnackBarWidget.showSnackCustom(context: context,isError: true,text: state.errorMessage);
+          }else{
+            ShowDialogWidget.showDialogDefaultBloc(context: context, status: state.status, text: state.errorMessage);
+            if(state.errorMessage == "Login Success"){
+              await Future<void>.delayed(const Duration(seconds: 3),(){
+                Navigator.pushNamed(
+                    context, RouteName.initial,
+                    arguments: "");
+                context.read<AccountCubit>().loadingAccount();
+
+              });
+            }
+          }
         }
+
       },
       child: Scaffold(
           backgroundColor: Colors.white,
@@ -148,8 +160,7 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         GestureDetector(
                           onTap: (){
-
-                            context.read<AccountCubit>().logInWithCredentials(emailController.text, passwordController.text);
+                            context.read<LoginCubit>().logInWithCredentials(emailController.text, passwordController.text);
                           },
                           child: ButtonBorderRadius(
                             widget: Container(
@@ -168,14 +179,16 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         RichText(
                           text: TextSpan(
-                              text: "Don't have an ccount?",
+                              text: "Don't have an account?",
                               style: TextStyle(
                                 color: Colors.grey[500],
                                 fontSize: size.height * 0.02,
                               ),
                               children: [
                                 TextSpan(
-                                  recognizer: TapGestureRecognizer()..onTap=()=>print('aa'),
+                                  recognizer: TapGestureRecognizer()..onTap=()=>Navigator.pushNamed(
+                              context, RouteName.signUp,
+                              arguments: ""),
                                   text: "Create",
                                   style: TextStyle(
                                       color: Colors.black,

@@ -6,12 +6,11 @@ import '../../app/utils/colors.dart';
 
 class EditTextForm extends StatelessWidget {
   const EditTextForm({
-    Key? key, this.minLines = 1, required this.labelText, this.hintText = "HintText", this.fillColor = Colors.white, this.radiusBorder, required this.controller, this.textInputType=TextInputType.multiline, required this.onSave,
+    Key? key, this.minLines = 1, required this.labelText, this.fillColor = Colors.white, this.radiusBorder, required this.controller, this.textInputType=TextInputType.multiline, required this.onSave,
   }) : super(key: key);
 
   final int minLines;
   final String labelText;
-  final String hintText;
   final Color fillColor;
   final double? radiusBorder;
   final TextEditingController controller;
@@ -20,6 +19,7 @@ class EditTextForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("rebuild widget editextfrom: $labelText");
     Size size = MediaQuery.of(context).size;
     return TextFormField(
         controller: controller,
@@ -37,11 +37,12 @@ class EditTextForm extends StatelessWidget {
           return null;
         },
         onSaved: (save){
+          print("onSave");
           onSave(save);
         },
         decoration: InputDecoration(
           labelText: labelText,
-          hintText: hintText,
+          hintText: "$labelText...",
           labelStyle: TextStyle(
             fontSize: size.height * 0.02,
                 fontWeight: FontWeight.bold,

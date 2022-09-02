@@ -1,14 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class CartModel {
-  int? id;
+  String? id;
   String? name;
   int? price;
   String? img;
   String? color;
   int? size;
-  int? idOrder;
+  String? idOrder;
   int? quantity;
-  bool? isExist;
-  String? time;
   String? idProduct;
   String? createdAt;
   String? updatedAt;
@@ -23,12 +23,44 @@ class CartModel {
         this.size,
         this.idOrder,
         this.quantity,
-        this.isExist,
-        this.time,
         this.idProduct,
         this.createdAt,
         this.updatedAt,
       });
+
+  factory CartModel.formSnapshot(DocumentSnapshot snap){
+    CartModel cartModel = CartModel(
+      id: snap.id,
+      name: snap["name"],
+      price: snap["price"],
+      img: snap["img"],
+      color: snap["color"],
+      size: snap["size"],
+      idOrder: snap["idOrder"],
+      quantity: snap["quantity"],
+      idProduct: snap["idProduct"],
+      createdAt: snap['createdAt'],
+      updatedAt: snap['updatedAt'],
+    );
+    return cartModel;
+  }
+
+  factory CartModel.fromMap(Map<String, dynamic> snap){
+    CartModel cartModel = CartModel(
+      id: snap["id"],
+      name: snap["name"],
+      price: snap["price"],
+      img: snap["img"],
+      color: snap["color"],
+      size: snap["size"],
+      idOrder: snap["idOrder"],
+      quantity: snap["quantity"],
+      idProduct: snap["idProduct"],
+      createdAt: snap['createdAt'],
+      updatedAt: snap['updatedAt'],
+    );
+    return cartModel;
+  }
 
   CartModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -39,8 +71,6 @@ class CartModel {
     size = json['size'];
     idOrder = json['id_order'];
     quantity = json['quantity'];
-    isExist = json['isExist'];
-    time = json['time'];
     idProduct = json['id_product'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
@@ -56,13 +86,17 @@ class CartModel {
       "color":this.color,
       "size":this.size,
       "quantity":this.quantity,
-      "isExist":this.isExist,
       "idProduct":this.idProduct,
-      "time":this.time,
       "createdAt": this.createdAt,
       "updatedAt": this.updatedAt,
     };
 
   }
 
+
 }
+
+List<CartModel> demo_listcart = [
+
+];
+

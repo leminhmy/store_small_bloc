@@ -81,6 +81,7 @@ class ProductPage extends StatelessWidget {
                             case StatusType.error:
                               return const AppErrorWidget();
                             case StatusType.loaded:
+
                               return PopularProducts(
                                 listShoesProduct: state.listProduct,
                               );

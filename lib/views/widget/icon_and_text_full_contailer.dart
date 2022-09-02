@@ -31,7 +31,12 @@ class IconAndTextFullContainer extends StatelessWidget {
               icon: iconData,
               press: () {}),
           SizedBox(width: size.height * 0.01,),
-          SmallText(text: text,color: Colors.black),
+           Expanded(
+             child: SingleChildScrollView(
+               physics: const BouncingScrollPhysics(),
+                 scrollDirection: Axis.horizontal,
+                 child: SmallText(text: text,color: Colors.black)),
+           ),
         ],
       ),
     );

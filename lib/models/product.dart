@@ -10,12 +10,12 @@ class ProductsModel {
   int? price;
   List<String>? listColor;
   List<int>? listSize;
-  int? typeId;
   String? description;
   String? img;
   String? category;
   List<String>? listImg;
   String? createdAt;
+  bool? released;
   String? updatedAt;
 
   ProductsModel({
@@ -25,11 +25,11 @@ class ProductsModel {
     this.price,
     this.listColor,
     this.listSize,
-    this.typeId,
     this.category,
     this.description,
     this.listImg,
     this.img,
+    this.released = false,
     this.createdAt,
     this.updatedAt,
   });
@@ -58,28 +58,29 @@ class ProductsModel {
     price = json['price'];
     listColor = json['list_color'];
     listSize = json['list_size'];
-    typeId = json['type_id'];
     description = json['description'];
+    released = json['released'];
     img = json['img'];
-    listImg = json['listimg'];
+    listImg = json['list_img'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
   }
 
   Map<String, dynamic> toJson() {
     return {
-      "id": this.id,
-      "name": this.name,
-      "subTitle": this.subTitle,
-      "price": this.price,
-      "color": this.listColor,
-      "size": this.listSize,
-      "typeId": this.typeId,
-      "description": this.description,
-      "createdAt": this.createdAt,
-      "updatedAt": this.updatedAt,
-      "img": this.img,
-      "listimg": this.listImg,
+      "id": id,
+      "name": name,
+      "subTitle": subTitle,
+      "price": price,
+      "listColor": listColor,
+      "listSize": listSize,
+      "category": category,
+      "released": released,
+      "description": description,
+      "createdAt": createdAt,
+      "updatedAt": updatedAt,
+      "img": img,
+      "listImg": listImg,
     };
   }
 }
@@ -91,7 +92,6 @@ List<ProductsModel> demo_products = [
       price: 10,
       listColor: ["0xffffffff",'0xffc70a0a'],
       listSize: [26,27,28],
-      typeId: 1,
       description: "description",
       img: 'assets/images/a2.png',
       listImg: ['assets/images/a2.png',]),
@@ -102,7 +102,6 @@ List<ProductsModel> demo_products = [
       price: 10,
       listColor: ["0xffffffff",'0xffc70a0a'],
       listSize: [26,27,28],
-      typeId: 2,
       description: "description",
       img: 'assets/images/a1.jpg',
       listImg: []),
@@ -113,7 +112,6 @@ List<ProductsModel> demo_products = [
       price: 10,
       listColor: ["0xffffffff",'0xffc70a0a'],
       listSize: [26,27,28],
-      typeId: 3,
       description: "description",
       img: 'assets/images/a2.png',
       listImg: []),
@@ -124,7 +122,6 @@ List<ProductsModel> demo_products = [
       price: 10,
       listColor: ["0xffffffff",'0xffc70a0a'],
       listSize: [26,27,28],
-      typeId: 4,
       description: "description",
       img: 'assets/images/a1.jpg',
       listImg: []),
@@ -133,7 +130,6 @@ List<ProductsModel> demo_products = [
       name: "product 5",
       subTitle: "subTitle",
       price: 10,
-      typeId: 2,
       listColor: ["0xffffffff",'0xffc70a0a'],
       listSize: [26,27,28],
       description: "description",

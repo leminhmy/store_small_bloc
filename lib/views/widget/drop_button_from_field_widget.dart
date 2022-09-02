@@ -5,7 +5,11 @@ import '../../models/shoes_type.dart';
 import 'big_text.dart';
 
 class DropButtonFromFieldWidget extends StatefulWidget {
-  const DropButtonFromFieldWidget({Key? key}) : super(key: key);
+  const DropButtonFromFieldWidget({Key? key, required this.shoesTypeListModel, required this.valueSelected, this.valueDefault = ""}) : super(key: key);
+
+  final List<ShoesTypeModel> shoesTypeListModel;
+  final ValueChanged<String> valueSelected;
+  final String valueDefault;
 
   @override
   State<DropButtonFromFieldWidget> createState() => _DropButtonFromFieldWidgetState();
@@ -13,8 +17,20 @@ class DropButtonFromFieldWidget extends StatefulWidget {
 
 class _DropButtonFromFieldWidgetState extends State<DropButtonFromFieldWidget> {
   String? _selectedType;
-  List<String> shoesTypeList = [];
-  List<ShoesTypeModel> shoesTypeListModel = [];
+  List<ShoesTypeModel> _shoesTypeListModel = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    if(widget.valueDefault.isNotEmpty){
+      _selectedType = widget.valueDefault;
+    }else{
+      _selectedType = widget.shoesTypeListModel[0].name;
+    }
+    _shoesTypeListModel = widget.shoesTypeListModel;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -51,19 +67,16 @@ class _DropButtonFromFieldWidgetState extends State<DropButtonFromFieldWidget> {
       elevation: 16,
       style: const TextStyle(color: Colors.deepPurple),
       onChanged: (String? newValue) {
-        /* shoesTypeListModel.forEach((element) {
-          if(element.name == newValue){
-            _selectedTypeInt = element.id;
-          }
-        });
+        _selectedType = newValue;
+        widget.valueSelected(newValue!);
         setState(() {
-        });*/
+        });
       },
-      items: shoesTypeList.map((item) {
+      items: _shoesTypeListModel.map((item) {
         return DropdownMenuItem(
-          value: item,
+          value: item.name,
           child:  BigText(
-            text: item.replaceAll('"', ""),
+            text: item.name!.replaceAll('"', ""),
             color: Colors.black,
           ),
         );
