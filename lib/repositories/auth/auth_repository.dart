@@ -17,28 +17,14 @@ class AuthRepository {
   Stream<String> get user {
 
     return _firebaseAuth.authStateChanges().map((firebaseUser) {
-      return firebaseUser!.uid;
+      if(firebaseUser!.uid != ""){
+        return firebaseUser.uid;
+      }
+      else{
+        return "";
+      }
     });
   }
-  /*Stream<UserModel> get user {
-
-    return _firebaseAuth.authStateChanges().map((firebaseUser)  {
-
-      UserModel user = firebaseUser == null ? UserModel.empty : firebaseUser.toUser;
-      currentUser = user;
-      /*try{
-         _firebaseFiretore.collection("users").doc(firebaseUser!.uid).get().then((value)
-        {
-          user = UserModel.fromMap(value.data());
-          print("user ${user.toJson()}");
-          currentUser = user;
-        });
-      }catch(e){
-        print("error $e");
-      }*/
-      return user;
-    });
-  }*/
 
   Future<UserModel> getInfoUserFirebase(String uid)  async {
     UserModel user = UserModel.empty;
@@ -150,6 +136,7 @@ class AuthRepository {
   Future<void> logOut() async {
     try {
       await Future.wait([_firebaseAuth.signOut()]);
+      currentUser = UserModel.empty;
     } catch (_) {}
   }
 

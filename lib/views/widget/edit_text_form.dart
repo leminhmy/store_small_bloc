@@ -20,6 +20,7 @@ class EditTextForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("rebuild widget editextfrom: $labelText");
     Size size = MediaQuery.of(context).size;
     return TextFormField(
         controller: controller,
@@ -37,6 +38,7 @@ class EditTextForm extends StatelessWidget {
           return null;
         },
         onSaved: (save){
+          print("onSave");
           onSave(save);
         },
         decoration: InputDecoration(

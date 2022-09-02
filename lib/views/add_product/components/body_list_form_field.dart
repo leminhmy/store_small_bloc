@@ -1,35 +1,37 @@
+
 import 'package:flutter/material.dart';
 
 import '../../widget/edit_text_form.dart';
-class BodyListFormField extends StatefulWidget {
-  const BodyListFormField({Key? key}) : super(key: key);
 
-  @override
-  State<BodyListFormField> createState() => _BodyListFormFieldState();
-}
+class BodyListFormField extends StatelessWidget {
+  const BodyListFormField({Key? key, required this.name, required this.subTitle, required this.price, required this.description}) : super(key: key);
 
-class _BodyListFormFieldState extends State<BodyListFormField> {
+  final TextEditingController name;
+  final TextEditingController subTitle;
+  final TextEditingController price;
+  final TextEditingController description;
+
   @override
   Widget build(BuildContext context) {
-    TextEditingController name = TextEditingController(text: "name");
-    TextEditingController subTitle = TextEditingController(text: "subTitle");
-    TextEditingController price = TextEditingController(text: "0.0",);
-    TextEditingController description = TextEditingController(text: "description");
     Size size = MediaQuery.of(context).size;
     return Column(
       children: [
-        EditTextForm(controller: name, labelText: "Name",onSave: (value) => name.text = value!),
+        EditTextForm(
+          onSave: (save) => name.text = save!,
+          controller: name,
+          labelText: "Name",),
         SizedBox(height: size.height * 0.01),
         EditTextForm(
+            onSave: (save) => subTitle.text = save!,
             controller: subTitle,
             minLines: 2,
-            onSave: (value) => subTitle.text = value!,
+
             labelText: "SubTitle"),
         SizedBox(
           height: size.height * 0.01,
         ),
         EditTextForm(
-            onSave: (value) => price.text = value!,
+            onSave: (save) => price.text = save!,
             controller: price,
             textInputType: TextInputType.number,
             labelText: "Price"),
@@ -37,7 +39,7 @@ class _BodyListFormFieldState extends State<BodyListFormField> {
           height: size.height * 0.01,
         ),
         EditTextForm(
-          onSave: (value) => description.text = value!,
+          onSave: (save) => description.text = save!,
           controller: description,
           minLines: 6,
           labelText: "Description",

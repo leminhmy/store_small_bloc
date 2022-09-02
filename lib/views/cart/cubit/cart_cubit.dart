@@ -13,37 +13,46 @@ import '../../../core/type/enum.dart';
 part 'cart_state.dart';
 
 class CartCubit extends Cubit<CartState> {
-  CartCubit() : super( CartState(listCart: demo_order[0].orderItems!));
+
+  CartCubit() : super( const CartState());
+
 
   Future<void> loadingCart()async{
     try{
       emit(state.copyWith(status: StatusType.loading));
-      await Future<void>.delayed(const Duration(seconds: 2));
-      emit(state.copyWith(status: StatusType.loaded,listCart: state.listCart));
+      await Future<void>.delayed(const Duration(seconds: 1));
+      emit(state.copyWith(status: StatusType.loaded,listCart: demo_listcart));
     }catch(error){
       log(error.toString());
       emit(state.copyWith(status: StatusType.error));
     }
   }
-  Future<List<CartModel>> addCart(CartModel cartModel)async{
+  Future<void> addCart(CartModel cartModel)async{
+    emit(state.copyWith(rebuild: false));
     try{
-      if(state.listCart.any((element) => element.id == cartModel.id)){
+      if(state.listCart.isEmpty){
+        print("read 1");
+        state.listCart.add(cartModel);
+      }else if(state.listCart.any((element) => element.idProduct == cartModel.idProduct)){
+        print("read 2");
         state.listCart[state.listCart.indexWhere((element) => element.idProduct == cartModel.idProduct)] = cartModel;
       }else{
+        print("read 3");
         state.listCart.add(cartModel);
       }
-      emit(state.copyWith(status: StatusType.loaded,listCart: state.listCart));
+      emit(state.copyWith(listCart: state.listCart,rebuild: true));
+
     }catch(error){
       log(error.toString());
       emit(state.copyWith(status: StatusType.error));
     }
-    return state.listCart;
   }
   void setQuantityIncreaseIndexCart(int index){
     try{
       state.listCart[index].quantity = state.listCart[index].quantity!+1;
       emit(state.copyWith(indexCart: index));
       emit(state.copyWith(indexCart: -1));
+      print("taped setQuantityIncreaseIndexCart");
     }catch(error){
       log(error.toString());
       emit(state.copyWith(status: StatusType.error));
@@ -52,13 +61,26 @@ class CartCubit extends Cubit<CartState> {
   }
   void setQuantityReduceIndexCart(int index){
     try{
-      state.listCart[index].quantity = state.listCart[index].quantity!-1;
-      emit(state.copyWith(indexCart: index));
-      emit(state.copyWith(indexCart: -1));
+      if(state.listCart[index].quantity == 1){
+        emit(state.copyWith(indexCart: index,messError: "Delete product ${state.listCart[index].name}"));
+        removeCartInList(index);
+        emit(state.copyWith(messError: ""));
+      }else{
+        state.listCart[index].quantity = state.listCart[index].quantity!-1;
+        emit(state.copyWith(indexCart: index));
+        emit(state.copyWith(indexCart: -1));
+      }
     }catch(error){
       log(error.toString());
       emit(state.copyWith(status: StatusType.error));
     }
+  }
+
+
+  Future<void> removeCartInList(int index) async {
+    print("start removeCartInList");
+    emit(state.copyWith(rebuild: false));
+    emit(state.copyWith(rebuild: true,listCart: state.listCart..removeAt(index)));
   }
 
 }

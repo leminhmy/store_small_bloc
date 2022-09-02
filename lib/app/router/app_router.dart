@@ -9,6 +9,8 @@ import 'package:store_small_bloc/views/chat_messing/chat_messing.dart';
 import 'package:store_small_bloc/views/detail_product/detail_product.dart';
 import 'package:store_small_bloc/views/detail_product/view/detail_product_page.dart';
 import 'package:store_small_bloc/views/home/view/home_page.dart';
+import 'package:store_small_bloc/views/login/login.dart';
+import 'package:store_small_bloc/views/register/view/register_view.dart';
 
 import '../../views/home/view/home_view.dart';
 
@@ -20,6 +22,24 @@ class AppRouter {
         if (args != null && args is String) {
           return PageTransition(
               child: const HomeView(
+              ),
+              type: PageTransitionType.fade);
+        }
+        return _errRoute();
+
+      case RouteName.logIn:
+        if (args != null && args is String) {
+          return PageTransition(
+              child: const LoginView(
+              ),
+              type: PageTransitionType.fade);
+        }
+        return _errRoute();
+
+      case RouteName.signUp:
+        if (args != null && args is String) {
+          return PageTransition(
+              child: const RegisterView(
               ),
               type: PageTransitionType.fade);
         }

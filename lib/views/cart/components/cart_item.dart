@@ -103,6 +103,7 @@ class CartItem extends StatelessWidget {
                           BlocBuilder<CartCubit, CartState>(
                               buildWhen: (previous, current) => current.indexCart == index,
                               builder: (context,state) {
+                                print("da rebuild");
                                 return BigText(text: state.listCart[index].quantity.toString());
                               }
                           ),

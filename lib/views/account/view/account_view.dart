@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:store_small_bloc/repositories/auth/auth_repository.dart';
 import 'package:store_small_bloc/views/account/account.dart';
 import 'package:store_small_bloc/views/register/view/register_view.dart';
+import 'package:store_small_bloc/views/widget/no_account.dart';
 
 import '../../../core/type/enum.dart';
 import '../../login/view/login_view.dart';
@@ -19,10 +20,10 @@ class AccountView extends StatelessWidget {
         buildWhen: (previous, current) =>
         previous.status != current.status,
       builder: (context, state) {
-          print(state.status);
+          print(state.yourUser);
         switch (state.status) {
           case StatusType.init:
-            return const RegisterView();
+            return const Scaffold(body: Center(child: NoAccountWidget()),);
           case StatusType.loading:
             return const AppLoadingWidget();
           case StatusType.loaded:

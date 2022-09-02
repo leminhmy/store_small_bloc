@@ -49,8 +49,7 @@ class DetailProductPage extends StatelessWidget {
             bottomNavigationBar: BottomBarWidget(
               onPressCheckOut: () async{
                 CartModel cartModel = context.read<DetailProductCubit>().cartOption();
-                List<CartModel> listCart =  await context.read<CartCubit>().addCart(cartModel);
-                print(listCart[0].toJson());
+                await context.read<CartCubit>().addCart(cartModel);
 
               },
             ),

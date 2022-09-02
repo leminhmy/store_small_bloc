@@ -1,14 +1,12 @@
 class CartModel {
-  int? id;
+  String? id;
   String? name;
   int? price;
   String? img;
   String? color;
   int? size;
-  int? idOrder;
+  String? idOrder;
   int? quantity;
-  bool? isExist;
-  String? time;
   String? idProduct;
   String? createdAt;
   String? updatedAt;
@@ -23,8 +21,6 @@ class CartModel {
         this.size,
         this.idOrder,
         this.quantity,
-        this.isExist,
-        this.time,
         this.idProduct,
         this.createdAt,
         this.updatedAt,
@@ -39,8 +35,6 @@ class CartModel {
     size = json['size'];
     idOrder = json['id_order'];
     quantity = json['quantity'];
-    isExist = json['isExist'];
-    time = json['time'];
     idProduct = json['id_product'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
@@ -56,13 +50,17 @@ class CartModel {
       "color":this.color,
       "size":this.size,
       "quantity":this.quantity,
-      "isExist":this.isExist,
       "idProduct":this.idProduct,
-      "time":this.time,
       "createdAt": this.createdAt,
       "updatedAt": this.updatedAt,
     };
 
   }
 
+
 }
+
+List<CartModel> demo_listcart = [
+
+];
+

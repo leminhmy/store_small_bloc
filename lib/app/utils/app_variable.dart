@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class AppVariable{
@@ -19,6 +20,16 @@ class AppVariable{
     var outputFormat = DateFormat("MM/dd/yyyy hh:mm a");
     outputDate = outputFormat.format(inputDate);
     return outputDate;
+  }
+
+  static ScaffoldMessengerState showErrorSnackBar(BuildContext context, String? error){
+   return ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text("Error: $error"),
+        ),
+      );
   }
 
 }

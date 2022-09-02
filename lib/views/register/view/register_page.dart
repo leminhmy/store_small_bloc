@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../app/router/route_name.dart';
 import '../../../app/utils/colors.dart';
 import '../../../core/type/enum.dart';
 import '../../account/cubit/account_cubit.dart';
@@ -150,7 +151,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   RichText(
                       text: TextSpan(
                           recognizer: TapGestureRecognizer()
-                            ..onTap = () => print(''),
+                            ..onTap = () => Navigator.pushNamed(
+                                context, RouteName.logIn,
+                                arguments: ""),
                           text: "Have an account already?",
                           style: TextStyle(
                             color: Colors.grey[500],

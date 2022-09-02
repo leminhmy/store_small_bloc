@@ -23,8 +23,8 @@ class OrderList {
 }
 
 class Order {
-  int? id;
-  int? userId;
+  String? id;
+  String? userId;
   int? orderAmount;
   int? phone;
   int? status;
@@ -82,8 +82,8 @@ class Order {
 
 List<Order> demo_order = [
   Order(
-      id: 1,
-      userId: 1,
+      id: "1",
+      userId: "1",
       orderAmount: 9999,
       phone: 123456879,
       status: 1,
@@ -92,8 +92,8 @@ List<Order> demo_order = [
       updatedAt: "2022-08-11 10:20:10",
       orderItems: [
         CartModel(
-            id: 1,
-            idOrder: 1,
+            id: "1",
+            idOrder: "1",
             idProduct: "1",
             name: "product1",
             img: 'assets/images/a1.jpg',
@@ -105,8 +105,8 @@ List<Order> demo_order = [
             updatedAt: "2022-08-11 10:20:10",
         ),
         CartModel(
-          id: 2,
-          idOrder: 1,
+          id: "2",
+          idOrder: "1",
           idProduct: "1",
           name: "product1",
           img: 'assets/images/a1.jpg',
@@ -118,8 +118,8 @@ List<Order> demo_order = [
           updatedAt: "2022-08-11 10:20:10",
         ),
         CartModel(
-          id: 3,
-          idOrder: 1,
+          id: "3",
+          idOrder: "1",
           idProduct: "1",
           name: "product1",
           img: 'assets/images/a1.jpg',
@@ -132,8 +132,8 @@ List<Order> demo_order = [
         ),
       ]),
   Order(
-      id: 2,
-      userId: 1,
+      id: "2",
+      userId: "1",
       orderAmount: 9999,
       phone: 123456879,
       status: 1,
@@ -141,8 +141,8 @@ List<Order> demo_order = [
       updatedAt: "2022-08-11 10:20:10",
       orderItems: [
         CartModel(
-          id: 1,
-          idOrder: 1,
+          id: "1",
+          idOrder: "1",
           idProduct: "1",
           name: "product1",
           img: 'assets/images/a1.jpg',
@@ -154,8 +154,8 @@ List<Order> demo_order = [
           updatedAt: "2022-08-11 10:20:10",
         ),
         CartModel(
-          id: 2,
-          idOrder: 1,
+          id: "2",
+          idOrder: "1",
           idProduct: "1",
           name: "product1",
           img: 'assets/images/a1.jpg',
@@ -167,8 +167,8 @@ List<Order> demo_order = [
           updatedAt: "2022-08-11 10:20:10",
         ),
         CartModel(
-          id: 3,
-          idOrder: 1,
+          id: "3",
+          idOrder: "1",
           idProduct: "1",
           name: "product1",
           img: 'assets/images/a1.jpg',

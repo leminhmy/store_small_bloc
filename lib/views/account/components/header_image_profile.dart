@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart';
 import 'package:store_small_bloc/models/user_model.dart';
 
 import '../../../app/utils/colors.dart';
@@ -111,15 +110,15 @@ class _HeaderImageProfileState extends State<HeaderImageProfile> {
                                         ],
                                       ),
                                       EditTextForm(
-                                          onSave: (value) => name.text = value!,
-                                          controller: name,
+                                        onSave: (save) => name.text = save!,
+                                        controller: name,
                                           labelText: "Name"),
                                       SizedBox(height: size.height * 0.01,),
                                       EditTextForm(
-                                          onSave: (value) => phone.text = value!,
-                                          controller: phone,
+                                          onSave: (save) => phone.text = save!,
+                                        controller: phone,
                                           textInputType: TextInputType.number,
-                                          labelText: "Price"),
+                                          labelText: "Phone"),
                                       const Spacer(),
                                       GestureDetector(
                                         onTap: (){

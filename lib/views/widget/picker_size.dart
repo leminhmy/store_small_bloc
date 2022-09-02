@@ -1,25 +1,38 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../app/utils/app_variable.dart';
 import '../../app/utils/colors.dart';
 import 'big_text.dart';
 
 
 class PickerSizeWidget extends StatefulWidget {
-  const PickerSizeWidget({Key? key}) : super(key: key);
+  const PickerSizeWidget({Key? key, required this.listSize, this.listSizeDefault = const[]}) : super(key: key);
+
+  final ValueChanged<List<int>> listSize;
+  final List<int>? listSizeDefault;
 
   @override
   State<PickerSizeWidget> createState() => _PickerSizeWidgetState();
 }
 
 class _PickerSizeWidgetState extends State<PickerSizeWidget> {
-  List<String> listSize = [];
-  String sizeIndexPicker = '20';
-  List<String> pickItemsSize = List.generate(20, (index) => (20+index).toString());
+  List<int> listSize = [];
+  int sizeIndexPicker = 20;
+  List<int> pickItemsSize = List.generate(20, (index) => (20+index));
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    listSize.addAll(widget.listSizeDefault!);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    widget.listSize(listSize);
+    print("rebuild pricksize");
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
@@ -116,8 +129,7 @@ class _PickerSizeWidgetState extends State<PickerSizeWidget> {
                                     width: size.height * 0.01,
                                   ),
                                   BigText(
-                                      text: "Size " +
-                                          sizeIndexPicker),
+                                      text: "Size $sizeIndexPicker"),
                                 ],
                               ),
                               TextButton(
@@ -125,15 +137,17 @@ class _PickerSizeWidgetState extends State<PickerSizeWidget> {
                                   text: "SELECT",
                                 ),
                                 onPressed: () {
-                                  Navigator.of(context).pop();
                                   if (checkWasValue(listSize,
                                       sizeIndexPicker)) {
-                                    print(
-                                        "Error: Size already exists");
+                                    AppVariable.showErrorSnackBar(context, "Size already exists");
+
                                   } else {
+                                    print(sizeIndexPicker);
                                     listSize.add(sizeIndexPicker);
                                     setState(() {});
                                   }
+                                  Navigator.of(context).pop();
+
                                 },
                               ),
                             ],
@@ -162,12 +176,8 @@ class _PickerSizeWidgetState extends State<PickerSizeWidget> {
     );
   }
 
-  bool checkWasValue(List<String> listString, String valueString) {
-    final index = listString.indexOf(valueString);
-    if (index == -1) {
-      return false;
-    }
-    return true;
+  bool checkWasValue(List<int> listSize, int size) {
+    return listSize.contains(size);
   }
   buildSizePicker(StateSetter setStateDialog) {
     return Expanded(
@@ -181,7 +191,7 @@ class _PickerSizeWidgetState extends State<PickerSizeWidget> {
         children: pickItemsSize
             .map((item) => Center(
           child: BigText(
-            text: item,
+            text: item.toString(),
           ),
         ))
             .toList(),

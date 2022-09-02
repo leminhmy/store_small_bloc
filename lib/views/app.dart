@@ -4,6 +4,7 @@ import 'package:store_small_bloc/repositories/auth/auth_repository.dart';
 import 'package:store_small_bloc/repositories/category/category_repository.dart';
 import 'package:store_small_bloc/repositories/products/product_repository.dart';
 import 'package:store_small_bloc/views/account/account.dart';
+import 'package:store_small_bloc/views/edit_product/cubit/edit_product_cubit.dart';
 import 'package:store_small_bloc/views/login/login.dart';
 import 'package:store_small_bloc/views/products/cubit/filter_product_cubit.dart';
 import 'package:store_small_bloc/views/products/cubit/product_cubit.dart';
@@ -35,6 +36,11 @@ class App extends StatelessWidget {
               ProductCubit(productRepository: ProductRepository())
                 ..mapLoadProductState(),
         ),
+        BlocProvider<CartCubit>(
+          create: (BuildContext context) =>
+          CartCubit()..loadingCart(),
+        ),
+
         BlocProvider<FilterProductCubit>(
           create: (BuildContext context) => FilterProductCubit(
               categoryRepository: CategoryRepository(),

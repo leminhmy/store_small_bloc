@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:store_small_bloc/views/cart/cart.dart';
 
 import '../../../app/router/route_name.dart';
 import '../../../app/utils/colors.dart';
@@ -67,28 +69,37 @@ class AppBarAction extends StatelessWidget {
                       onTap: () {
                      /*   print(catController.totalItems);*/
                       },
-                      child: BorderRadiusWidget(
+                      child: const BorderRadiusWidget(
                           widget: Icon(
                             Icons.shopping_cart_outlined,
                             color: Colors.white,
                           ))),
                   Positioned(
                     right: 0,top: 0,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        IconBackgroundBorderRadius(
-                          icon: Icons.circle,
-                          size: 20,
-                          iconColor: Colors.transparent,
-                          backgroundColor: AppColors.redColor,
-                          sizeHeight: 20,
-                          press: () {},
-                        ),
-                        Align(
-                            alignment: Alignment.center,
-                            child: BigText(text: "1",color: Colors.white,fontSize: size.height * 0.012,)),
-                      ],
+                    child: BlocBuilder<CartCubit, CartState>(
+                        buildWhen: (previous, current) => previous.rebuild != current.rebuild,
+                        builder: (context, state) {
+                          if(state.listCart.isNotEmpty){
+                            return Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                IconBackgroundBorderRadius(
+                                  icon: Icons.circle,
+                                  size: 20,
+                                  iconColor: Colors.transparent,
+                                  backgroundColor: AppColors.redColor,
+                                  sizeHeight: 20,
+                                  press: () {},
+                                ),
+                                Align(
+                                    alignment: Alignment.center,
+                                    child: BigText(text: "${state.listCart.length}",color: Colors.white,fontSize: size.height * 0.012,)),
+                              ],
+                            );
+                          }else{
+                            return const SizedBox();
+                          }
+                      }
                     ),
                   )
                 ],
