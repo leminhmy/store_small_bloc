@@ -48,4 +48,14 @@ class AppVariable{
       );
   }
 
+  static ScaffoldMessengerState showErrorSnackBar(BuildContext context, String? error){
+   return ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text("Error: $error"),
+        ),
+      );
+  }
+
 }
