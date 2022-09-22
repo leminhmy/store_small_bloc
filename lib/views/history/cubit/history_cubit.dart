@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:store_small_bloc/core/type/enum.dart';
@@ -12,47 +14,50 @@ part 'history_state.dart';
 
 class HistoryCubit extends Cubit<HistoryState> {
   final OrderRepository _orderRepository;
-  final AuthRepository _authRepository;
-  HistoryCubit({required AuthRepository authRepository,required OrderRepository orderRepository}) :
+  HistoryCubit({required OrderRepository orderRepository}) :
         _orderRepository = orderRepository,
-        _authRepository = authRepository,
         super(const HistoryState(listOrder: [],));
 
 
+
+
   void loadingHistory(){
-    _authRepository.user.listen((event) {
-      event.then((value) {
-        if(value == ""){
-          emit(state.copyWith(status: StatusType.init,listOrder: []));
-        }else{
-          if(_authRepository.getUser.status == 2){
-            emit(state.copyWith(checkAdmin: true));
-            getOrderAdmin();
-          }else{
-            emit(state.copyWith(checkAdmin: false));
-            getOrderUser();
-          }
+    if(AuthRepository.currentUser.isNotEmpty){
+      int? statusUser = AuthRepository.currentUser.status;
+      if(statusUser == 2){
+        emit(state.copyWith(checkAdmin: true,status: StatusType.loaded));
+        getOrderAdmin();
+      }
+      else{
+        emit(state.copyWith(checkAdmin: false,status: StatusType.loaded));
+        getOrderUser();
+      }
+    }else{
+      emit(state.copyWith(status: StatusType.init,listOrder: [],));
+    }
 
-        }
-      });
-    });
+
 
   }
 
-  void getOrderUser(){
-    _orderRepository.getOrderUser(_authRepository.getUser.id).listen((event) {
+
+   getOrderUser(){
+     _orderRepository.getOrderUser(AuthRepository.currentUser.id).listen((event) {
       emit(state.copyWith(status: StatusType.loaded,listOrder: event));
       rebuild();
     });
   }
 
-  void getOrderAdmin(){
-    _orderRepository.getOrderAdmin().listen((event) {
+   getOrderAdmin(){
+     _orderRepository.getOrderAdmin().listen((event) {
       emit(state.copyWith(status: StatusType.loaded,listOrder: event));
       rebuild();
     });
   }
 
+  void testListOrder(){
+    print(state.listOrder.map((e) => e.toJson()).toList());
+  }
 
 
 

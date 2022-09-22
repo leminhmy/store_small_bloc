@@ -30,6 +30,23 @@ class ProductRepository extends BaseProductRepository {
     }
 
   }
+  Future<String> deleteProduct(ProductsModel productsModel)async{
+    try{
+
+      await _firebaseFirestore.collection("products").doc(productsModel.id).delete();
+      await _firebaseStorage.ref("img_products/${productsModel.id}").listAll().then((value) {
+        for (var element in value.items) {
+          FirebaseStorage.instance.ref(element.fullPath).delete();
+        }
+      });
+      print("delete product success");
+      return  "";
+    } on FirebaseException catch (error) {
+      print(error.code);
+      print("error delete Product${error.message}");
+      return error.message!;
+    }
+  }
 
   Future<String> addProduct(
       ProductsModel product, List<XFile> listImages) async {

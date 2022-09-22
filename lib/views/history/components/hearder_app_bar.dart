@@ -34,6 +34,7 @@ class AppBarCustom extends StatelessWidget {
           IconBackgroundBorderRadius(
             icon: Icons.shopping_cart_outlined,
             press: () {
+              context.read<HistoryCubit>().testListOrder();
             },
             size: size.height * 0.02,
           ),

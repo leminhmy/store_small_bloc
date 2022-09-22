@@ -9,9 +9,9 @@ import '../../widget/show_dialog.dart';
 import '../../widget/show_snack_bar.dart';
 
 class GoogleMapPage extends StatefulWidget {
-  const GoogleMapPage({Key? key, this.locationLatlng,}) : super(key: key);
+  const GoogleMapPage({Key? key, required this.locationLatLng,}) : super(key: key);
 
-  final LatLng? locationLatlng;
+  final LatLng locationLatLng;
 
   @override
   State<GoogleMapPage> createState() => _GoogleMapPageState();
@@ -21,38 +21,21 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
 
   late GoogleMapController googleMapController;
 
-  CameraPosition initialCameraPosition = const CameraPosition(target:  LatLng(10.5881982,106.5937773), zoom: 14);
+  late CameraPosition initialCameraPosition;
 
 
   Set<Marker> markers = {};
   late LatLng locationLatLng;
-  String _currentAddress = "null";
   late LatLng position;
 
 
   @override
   void initState() {
-    _initLocation();
+    initialCameraPosition = CameraPosition(target:  widget.locationLatLng, zoom: 14);
+    position = widget.locationLatLng;
     super.initState();
+
   }
-
-  Future<void> _initLocation() async{
-    if(widget.locationLatlng == null){
-      Position initPosition = await GeolocatorPlatform.instance
-          .getCurrentPosition();
-      locationLatLng = LatLng(initPosition.latitude,initPosition.longitude);
-      position = locationLatLng;
-
-    }else{
-      locationLatLng = widget.locationLatlng!;
-      position = widget.locationLatlng!;
-    }
-    markers.add(Marker(markerId: const MarkerId('currentLocation'),position: locationLatLng));
-    setState((){
-
-    });
-  }
-
 
   @override
   Widget build(BuildContext context) {

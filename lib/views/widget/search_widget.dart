@@ -26,7 +26,6 @@ class _SearchWidgetState extends State<SearchWidget> {
     const styleActive =  TextStyle(color: Colors.black);
     const styleHint = TextStyle(color: Colors.black54);
     final style = widget.text.isEmpty ? styleHint : styleActive;
-
     return Container(
       height: size.height * 0.042,
       width: widget.widthWidget,

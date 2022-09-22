@@ -41,6 +41,7 @@ class ProfileInfomation extends StatelessWidget {
                 SizedBox(height: size.height * 0.02,),
                 GestureDetector(
                   onTap: () {
+                    context.read<AccountCubit>().printAccount();
                   },
                   child: IconAndTextFullContainer(
                     colorBackground: AppColors.iconColor1,

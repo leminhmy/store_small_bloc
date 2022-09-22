@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserModel {
   String id;
   String? name;
@@ -34,6 +36,20 @@ class UserModel {
         image: json['image'],
         tokenMessages: json['token_messages'],
     );
+  }
+
+  factory UserModel.formSnapshot(DocumentSnapshot snap){
+    UserModel userModel = UserModel(
+      id: snap.id,
+      name: snap['name'],
+      email: snap['email'],
+      phone: snap['phone'],
+      address: snap['address'],
+      status: snap['status'],
+      image: snap['image'],
+      tokenMessages: snap['token_messages'],
+    );
+    return userModel;
   }
 
 

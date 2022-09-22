@@ -60,7 +60,7 @@ class _EditImageProductState extends State<EditImageProduct> {
                           color: AppColors.greenColor,
                           borderRadius: BorderRadius.all(
                               Radius.circular(size.height * 0.01)),
-                          image: DecorationImage(
+                          image: const DecorationImage(
                             fit: BoxFit.cover,
                             image: AssetImage('assets/images/a1.jpg'),
                           )),

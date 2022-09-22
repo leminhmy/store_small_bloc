@@ -7,83 +7,85 @@ import 'package:store_small_bloc/core/type/enum.dart';
 import 'package:store_small_bloc/models/user_model.dart';
 import 'package:store_small_bloc/repositories/auth/auth_repository.dart';
 
-
 part 'account_state.dart';
 
 class AccountCubit extends Cubit<AccountState> {
-  final AuthRepository _authRepository;
-  AccountCubit({required AuthRepository authRepository})
-      : _authRepository = authRepository,
-        super(authRepository.getUser.isNotEmpty? AccountState(status: StatusType.loaded,yourUser: authRepository.getUser):AccountState(yourUser: UserModel.empty,status: StatusType.init));
+  AccountCubit()
+      : super(AuthRepository.currentUser.isNotEmpty
+            ? AccountState(
+                status: StatusType.loaded, yourUser: AuthRepository.currentUser)
+            : AccountState(yourUser: UserModel.empty, status: StatusType.init));
 
-
-
-
-  void loadingAccount() async{
-    print("start loading account");
-    _authRepository.user.listen((event) {
-      print("account change from bloc");
-      event.then((value) {
-        if(value != ""){
-          emit(state.copyWith(status: StatusType.loading,errorMessage: ""));
-          emit(state.copyWith(yourUser: _authRepository.getUser,status: StatusType.loaded,errorMessage: ""));
-        }else{
-          emit(state.copyWith(yourUser: _authRepository.getUser,status: StatusType.init,errorMessage: ""));
-
-        }
-      });
-
-    });
+   loadingAccount() async {
+     if (AuthRepository.currentUser.isNotEmpty) {
+       AuthRepository().streamAccount().listen((event) {
+         rebuildAccount();
+       });
+       emit(state.copyWith(
+           yourUser: AuthRepository.currentUser,
+           status: StatusType.loaded,
+           errorMessage: ""));
+     } else {
+       emit(state.copyWith(
+           yourUser: UserModel(id: ""),
+           status: StatusType.init,
+           errorMessage: ""));
+     }
   }
 
 
-
-  UserModel getUidUser(){
-    return _authRepository.getUser;
+  printAccount() {
+    emit(state.copyWith(status: StatusType.init));
   }
 
+  void rebuildAccount() {
+    emit(state.copyWith(yourUser: AuthRepository.currentUser,errorMessage: ""));
+    emit(state.copyWith(rebuildInfo: false));
+    emit(state.copyWith(rebuildInfo: true));
+  }
 
-  void logoutRequested() async{
+  void logoutRequested() async {
     await Future<void>.delayed(const Duration(seconds: 2));
-    unawaited(_authRepository.logOut());
-    emit(state.copyWith(status: StatusType.init,yourUser: UserModel.empty,errorMessage: ""));
+    unawaited(AuthRepository().logOut());
+    emit(state.copyWith(status: StatusType.init,errorMessage: ""));
+
   }
-  void updateAccount({required String name, required String phone, XFile? image}) async{
+
+  void updateAccount(
+      {required String name, required String phone, XFile? image}) async {
+    print("start fn updateAccount");
     emit(state.copyWith(errorMessage: ""));
-    if(name.isEmpty){
+    if (name.isEmpty) {
       emit(state.copyWith(errorMessage: "Name is Empty"));
-    }else if(phone.isEmpty){
+    } else if (phone.isEmpty) {
       emit(state.copyWith(errorMessage: "Phone is Empty"));
-    }else{
-      emit(state.copyWith(errorMessage: "Updating",status: StatusType.loading));
+    } else {
+      emit(state.copyWith(
+          errorMessage: "Updating", statusSetData: StatusType.loading));
       String? urlImageInfo;
-      if(image != null){
-        urlImageInfo = await _authRepository.uploadImageUser(image);
+      if (image != null) {
+        urlImageInfo = await AuthRepository().uploadImageUser(image);
       }
-      if(urlImageInfo == "Error"){
-        emit(state.copyWith(errorMessage: "Image error"));
-      }else{
-        Map<String, dynamic> updateProfileInfo = {"name":name,"phone":int.parse(phone),"image":urlImageInfo};
-        String statusUpdateInfo = await _authRepository.updateAccount(updateProfileInfo);
-        if(statusUpdateInfo == "Success"){
-          emit(state.copyWith(errorMessage: statusUpdateInfo,status: StatusType.loaded));
+      if (urlImageInfo == "Error") {
+        emit(state.copyWith(
+            errorMessage: "Image error", statusSetData: StatusType.error));
+      } else {
+        Map<String, dynamic> updateProfileInfo = {
+          "name": name,
+          "phone": int.parse(phone),
+          "image": urlImageInfo
+        };
+        String statusUpdateInfo =
+            await AuthRepository().updateAccount(updateProfileInfo);
+        if (statusUpdateInfo == "Success") {
+          emit(state.copyWith(
+              errorMessage: statusUpdateInfo,
+              statusSetData: StatusType.loaded));
           await Future<void>.delayed(const Duration(seconds: 2));
-          loadingAccount();
-        }else{
+        } else {
           emit(state.copyWith(errorMessage: "Error update profile"));
         }
       }
-    }
-  }
-
-  Future<String> updateLocationUser(String location) async{
-    Map<String, dynamic> updateProfileInfo = {"address":location,};
-    String statusUpdateInfo = await _authRepository.updateAccount(updateProfileInfo);
-    if(statusUpdateInfo == "Success"){
-      loadingAccount();
-      return "Success";
-    }else{
-      return "Fail update Address";
     }
   }
 
@@ -92,7 +94,7 @@ class AccountCubit extends Cubit<AccountState> {
 extension EmailValidator on String {
   bool isValidEmail() {
     return RegExp(
-        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+            r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
         .hasMatch(this);
   }
 }

@@ -16,15 +16,22 @@ class GoogleMapCubit extends Cubit<GoogleMapState> {
        _mapRepository = mapRepository, super( const GoogleMapState());
 
 
-  void loadingAddressFromUser(String address){
-    emit(state.copyWith(address: address,status: StatusType.loaded,errorMessage: ""));
+  void loadingAddressFromUser(){
+    if(AuthRepository.currentUser.address != null){
+      emit(state.copyWith(address: AuthRepository.currentUser.address,status: StatusType.loaded,errorMessage: ""));
+
+    }
+  }
+
+  void updateLocationUser() async {
+    await AuthRepository().updateAccount({"address": state.address});
   }
 
   void getPositionLocation(LatLng newPosition) async {
     try{
       emit(state.copyWith(status: StatusType.loading,errorMessage: "Loading"));
       await Future<void>.delayed(const Duration(seconds: 5));
-      String getLocation = await _mapRepository.getLocation(newPosition);
+      String getLocation = await _mapRepository.getLocationApi(newPosition);
       if(getLocation.contains("Fail")){
         emit(state.copyWith(status: StatusType.error,errorMessage: getLocation));
       }else{

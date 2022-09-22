@@ -74,7 +74,6 @@ class ProductPage extends StatelessWidget {
                         previous.status != current.status,
                         builder: (context,state) {
 
-                          print(state.listShoesType.length);
                           switch (state.status) {
                             case StatusType.loading:
                               return const AppLoadingWidget();

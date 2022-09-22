@@ -16,20 +16,24 @@ class ChatsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ChatsCubit, ChatsState>(
-        buildWhen: (previous, current) => previous.status != current.status,
-      builder: (context, state) {
-        switch (state.status) {
-          case StatusType.init:
-            return const Scaffold(body: Center(child: NoAccountWidget()),);
-          case StatusType.loading:
-            return const AppLoadingWidget();
-          case StatusType.loaded:
-            return ChatsPage(listFriend: state.isFriend?state.listPeople:state.listFriend,);
-          default:
-            return const SizedBox();
+    return BlocProvider<ChatsCubit>(
+      create: (BuildContext context) => ChatsCubit(chatRepository: ChatRepository())..loading(),
+
+      child: BlocBuilder<ChatsCubit, ChatsState>(
+          buildWhen: (previous, current) => previous.status != current.status,
+        builder: (context, state) {
+          switch (state.status) {
+            case StatusType.init:
+              return const Scaffold(body: Center(child: NoAccountWidget()),);
+            case StatusType.loading:
+              return const AppLoadingWidget();
+            case StatusType.loaded:
+              return  ChatsPage(listFriend: state.listFriend);
+            default:
+              return const SizedBox();
+          }
         }
-      }
+      ),
     );
   }
 }

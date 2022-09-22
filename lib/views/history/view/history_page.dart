@@ -6,10 +6,14 @@ import 'package:store_small_bloc/views/history/history.dart';
 
 import '../../../models/order.dart';
 
-class HistoryPage extends StatelessWidget {
+class HistoryPage extends StatefulWidget {
   const HistoryPage({Key? key}) : super(key: key);
 
+  @override
+  State<HistoryPage> createState() => _HistoryPageState();
+}
 
+class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -25,6 +29,7 @@ class HistoryPage extends StatelessWidget {
               child: BlocBuilder<HistoryCubit, HistoryState>(
                   builder: (context, state) {
                     return ListView.builder(
+                      padding: EdgeInsets.zero,
                         itemCount: state.listOrder.length,
                         itemBuilder: (context, index){
                           return HistoryCard(order: state.listOrder[index],index: index,);
@@ -37,5 +42,4 @@ class HistoryPage extends StatelessWidget {
       )
     );
   }
-
 }

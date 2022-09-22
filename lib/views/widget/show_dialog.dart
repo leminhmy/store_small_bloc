@@ -18,7 +18,7 @@ class ShowDialogWidget{
       pageBuilder: (_, __, ___) {
         return Center(
           child: Container(
-            height: 240,
+            height: 251,
             margin: const EdgeInsets.symmetric(horizontal: 20),
             decoration: BoxDecoration(color: Colors.grey.shade400, borderRadius: BorderRadius.circular(20)),
             child:  Scaffold(body:  Center(
@@ -38,9 +38,9 @@ class ShowDialogWidget{
       transitionBuilder: (_, anim, __, child) {
         Tween<Offset> tween;
         if (anim.status == AnimationStatus.reverse) {
-          tween = Tween(begin: Offset(-1, 0), end: Offset.zero);
+          tween = Tween(begin: const Offset(-1, 0), end: Offset.zero);
         } else {
-          tween = Tween(begin: Offset(1, 0), end: Offset.zero);
+          tween = Tween(begin: const Offset(1, 0), end: Offset.zero);
         }
 
         return SlideTransition(
@@ -78,7 +78,10 @@ class ShowDialogWidget{
           content: Text(mess),
           actions: [
             TextButton(
-                onPressed: changeConfirm,
+                onPressed: ()async{
+                  changeConfirm();
+                  Navigator.pop(context);
+                },
                 child: const Text("Delete")),
             TextButton(
                 onPressed: () {
@@ -91,6 +94,7 @@ class ShowDialogWidget{
 
   static showDialogDefaultBloc(
       {required BuildContext context, required StatusType status, required String text}){
+
     if(status == StatusType.loading){
       return ShowDialogWidget.showCustomDialog(context,text: text);
     }else if(status == StatusType.loaded){

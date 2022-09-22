@@ -35,10 +35,13 @@ class _CategoryState extends State<Category> {
           children: [
             GestureDetector(
               onTap: (){
-                widget.onChange(0);
-                indexSelected = 0;
-                setState(() {
-                });
+                if(indexSelected != 0){
+                  widget.onChange(0);
+                  indexSelected = 0;
+                  setState(() {
+                  });
+                }
+
               },
               child: Container(
                 margin: EdgeInsets.only(right: size.height * 0.01),
@@ -58,11 +61,13 @@ class _CategoryState extends State<Category> {
                   return Row(
                     children: List.generate(state.listShoesType.length, (index) => GestureDetector(
                       onTap: (){
-                        widget.onChange(index+1);
-                        indexSelected = index + 1;
-                        setState(() {
+                        if(indexSelected != index + 1){
+                          widget.onChange(index+1);
+                          indexSelected = index + 1;
+                          setState(() {
 
-                        });
+                          });
+                        }
                       },
                       child: Container(
                         margin: EdgeInsets.only(right: size.height * 0.01),

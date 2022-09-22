@@ -32,7 +32,7 @@ class AppBarAction extends StatelessWidget {
           IconBackgroundBorderRadius(
             icon: Icons.arrow_back_ios_outlined,
             press: () {
-           Navigator.pop(context);
+             Navigator.pop(context);
             },
             sizeHeight: size.height * 0.04,
             size: size.height * 0.018,
@@ -67,6 +67,7 @@ class AppBarAction extends StatelessWidget {
                 children: [
                   GestureDetector(
                       onTap: () {
+                        context.read<CartCubit>().printOrder();
                       },
                       child: const BorderRadiusWidget(
                           widget: Icon(

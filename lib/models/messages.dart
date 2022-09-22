@@ -23,7 +23,7 @@ class MessagesModel{
 
   factory MessagesModel.formSnapshot(DocumentSnapshot snap){
     MessagesModel messages = MessagesModel(
-      id:snap['id'],
+      id:snap.id,
       messaging:snap['messaging'],
       image:snap['image'],
       idSend:snap['idSend'],

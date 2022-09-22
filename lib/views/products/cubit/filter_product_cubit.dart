@@ -37,16 +37,25 @@ class FilterProductCubit extends Cubit<FilterProductState> {
     }
   }
 
+  void deleteProduct(ProductsModel productsModel){
+    state.listProduct.remove(productsModel);
+    rebuildStatus();
+  }
+
+  void rebuildStatus() async{
+    emit(state.copyWith(status: StatusType.loading));
+    await Future<void>.delayed(const Duration(seconds: 1));
+    emit(state.copyWith(status: StatusType.loaded));
+  }
+
   Future<void> filterProducts(int indexFilter)async{
 
     try{
       if(indexFilter ==0){
         emit(state.copyWith(status: StatusType.loading,));
-        await Future<void>.delayed(const Duration(seconds: 2));
         getAllProduct();
       }else{
         emit(state.copyWith(status: StatusType.loading,));
-        await Future<void>.delayed(const Duration(seconds: 2));
         List<ProductsModel> filterListProduct = [];
         for (var element in listProduct) {
           if(element.category == (state.listShoesType[indexFilter-1].name)){

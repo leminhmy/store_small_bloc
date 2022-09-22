@@ -1,11 +1,15 @@
+import 'dart:async';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:store_small_bloc/models/user_model.dart';
+import 'package:store_small_bloc/repositories/notification_service/notification_repository.dart';
 import 'package:store_small_bloc/views/google_map/google_map.dart';
 import 'package:flutter/material.dart';
 
@@ -13,35 +17,70 @@ class AuthRepository {
   final firebase_auth.FirebaseAuth _firebaseAuth;
   final FirebaseFirestore _firebaseFiretore;
   final FirebaseStorage _firebaseStorage;
+  final FirebaseMessaging _firebaseMessaging;
 
   AuthRepository({firebase_auth.FirebaseAuth? firebaseAuth,
-    FirebaseFirestore? firebaseFirestore, FirebaseStorage? firebaseStorage})
+    FirebaseFirestore? firebaseFirestore, FirebaseStorage? firebaseStorage,FirebaseMessaging? firebaseMessaging })
       : _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance,
         _firebaseFiretore = firebaseFirestore ?? FirebaseFirestore.instance,
-        _firebaseStorage = firebaseStorage ?? FirebaseStorage.instance;
+        _firebaseStorage = firebaseStorage ?? FirebaseStorage.instance,
+  _firebaseMessaging = firebaseMessaging ?? FirebaseMessaging.instance;
 
-  UserModel _currentUser = UserModel.empty;
+  static UserModel currentUser = UserModel.empty;
 
-  UserModel get getUser => _currentUser;
+  static List<UserModel> listAdmin  = [];
+  static List<String> allTokenMessAdmin = [];
 
 
-  Stream<Future<String>> get user {
-    return _firebaseAuth.authStateChanges().map((firebaseUser) async {
-      print("account changed");
-      if (firebaseUser != null) {
-        print("co uid: ${firebaseUser.uid}");
-        await getInfoUserFirebase(firebaseUser.uid).then((value) {
-          print(value.toJson());
-          _currentUser = value;
-        });
-        return firebaseUser.uid;
+
+  Future<String> getDeviceTokenToSendNotification() async {
+    final FirebaseMessaging fcm = FirebaseMessaging.instance;
+    final token = await fcm.getToken();
+    return token.toString();
+  }
+
+  sendNotification(List<String>? tokenMess, String title, String content,){
+    if(tokenMess != null && tokenMess.isNotEmpty){
+      NotificationRepository().
+      sendNotification(listTokenMess: tokenMess,
+          title: title, content: content,
+          imgUrl: currentUser.image, name: currentUser.status == 2?"Admin":currentUser.name??"");
+    }
+  }
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>> streamAccount(){
+    return _firebaseFiretore.collection("users").doc(currentUser.id).snapshots();
+  }
+
+   _streamAccount({required String uid, required String tokenMess}){
+     _firebaseFiretore.collection("users").doc(uid).snapshots().listen((event) {
+      currentUser = UserModel.fromMap(event.data());
+      if(tokenMess != currentUser.tokenMessages){
+        updateAccount({"token_messages":tokenMess});
       }
-      else {
-        _currentUser = UserModel.empty;
-        return "";
-      }
+
     });
   }
+
+    streamUser() {
+     print("account call listen");
+
+      _firebaseAuth.authStateChanges().listen((firebaseUser) async {
+        print("account changed");
+        if (firebaseUser != null) {
+          String tokenMess = await getDeviceTokenToSendNotification();
+          _streamAccount(uid:firebaseUser.uid,tokenMess: tokenMess);
+        }
+        else {
+          currentUser = UserModel.empty;
+          print("account logout ${currentUser.toJson()}");
+
+        }
+      });
+
+  }
+
+
 
 
 
@@ -51,13 +90,23 @@ class AuthRepository {
     });
   }
 
+   void getAllAdmin(){
+    print("start fn get all admin");
+     _firebaseFiretore.collection("users").where("status",isEqualTo: 2).snapshots().listen((event) {
+      listAdmin = event.docs.map((e) => UserModel.fromMap(e)).toList();
+      allTokenMessAdmin = List.generate(listAdmin.length, (index) => listAdmin[index].tokenMessages!);
+
+    });
+  }
+
 
   Future<UserModel> getInfoUserFirebase(String uid) async {
     UserModel user = UserModel.empty;
     try {
+      print(" start call getInfoUser");
       await _firebaseFiretore.collection("users").doc(uid).get().then((value) {
-        _currentUser = UserModel.fromMap(value.data());
         user = UserModel.fromMap(value.data());
+        print(user.toJson());
       });
       print("call success getInfoUser");
     } catch (e) {
@@ -66,22 +115,15 @@ class AuthRepository {
     return user;
   }
 
-  String getUidUser() {
-    try {
-      print("uid: ${_currentUser.id}");
-      return "co uid";
-    } on FirebaseException catch (error) {
-      return "ko co uid";
-    }
-  }
+
 
 
   Future<String> updateAccount(Map<String, dynamic> infoUpdate) async {
     try {
-      print("uid: ${_currentUser.id}");
+      print("uid: ${currentUser.id}");
       infoUpdate.removeWhere((key, value) => value == null);
       await _firebaseFiretore.collection("users")
-          .doc(_currentUser.id)
+          .doc(currentUser.id)
           .update(infoUpdate);
       return "Success";
     } on FirebaseException catch (error) {
@@ -93,7 +135,7 @@ class AuthRepository {
     Reference reference = _firebaseStorage
         .ref()
         .child("img_users")
-        .child(_currentUser.id)
+        .child(currentUser.id)
         .child(image.name);
     UploadTask uploadTask = reference.putFile(File(image.path));
     try {
@@ -204,7 +246,7 @@ class AuthRepository {
   Future<void> logOut() async {
     try {
       await Future.wait([_firebaseAuth.signOut()]);
-      _currentUser = UserModel.empty;
+      currentUser = UserModel.empty;
     } catch (_) {}
   }
 

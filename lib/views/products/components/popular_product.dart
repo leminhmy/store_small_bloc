@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:store_small_bloc/repositories/auth/auth_repository.dart';
 import 'package:store_small_bloc/views/widget/empty_box.dart';
 
 import '../../../../app/utils/app_variable.dart';
@@ -39,7 +40,9 @@ class PopularProducts extends StatelessWidget {
             children: List.generate(listShoesProduct.length, (index) {
               return GestureDetector(
                 onLongPress: () {
-                  ShowBottomSheetEditProduct.openBottomSheet(context: context, product: listShoesProduct[index]);
+                  if(AuthRepository.currentUser.status == 2){
+                    ShowBottomSheetEditProduct.openBottomSheet(context: context, product: listShoesProduct[index]);
+                  }
                 },
                 onTap: () => Navigator.pushNamed(
                     context, RouteName.shoesDetail,
@@ -108,7 +111,7 @@ class PopularProducts extends StatelessWidget {
                                         ),
                                         Column(
                                           children: [
-                                            Text(
+                                            const Text(
                                               "Price: 150.000",
                                               style: TextStyle(
                                                 color: Colors.white,
@@ -138,7 +141,7 @@ class PopularProducts extends StatelessWidget {
                               child: Container(
                                 height: size.height * 0.075,
                                 width: size.height * 0.05,
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                     color: Colors.amberAccent,
                                     image: DecorationImage(
                                         image: AssetImage(
@@ -149,7 +152,7 @@ class PopularProducts extends StatelessWidget {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
-                                      SmallText(
+                                      const SmallText(
                                         text: "SELL",
                                         color: Colors.amberAccent,
                                       ),

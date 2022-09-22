@@ -10,10 +10,11 @@ import '../../widget/big_text.dart';
 import '../../widget/small_text.dart';
 
 class FriendCard extends StatelessWidget {
-  const FriendCard({Key? key, required this.friend, required this.index}) : super(key: key);
+  const FriendCard({Key? key, required this.friend, required this.index, required this.routerCard}) : super(key: key);
 
   final Friend friend;
   final int index;
+  final String routerCard;
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +69,7 @@ class FriendCard extends StatelessWidget {
                       text: "${friend.name}",
                       color: Colors.black,
                     ),
-                    StreamBuilder(
+                    routerCard != "people"?StreamBuilder(
                         stream: context
                             .read<ChatsCubit>()
                             .getLengthMissMessage(uidFriend: friend.uid ?? ""),
@@ -88,19 +89,25 @@ class FriendCard extends StatelessWidget {
                             return const SizedBox();
                           }
 
-                        }),
+                        }):const SizedBox(),
                   ],
                 ),
-                StreamBuilder(
+                routerCard != "people"?StreamBuilder(
                     stream: context
                         .read<ChatsCubit>()
                         .getLastMessageFriend(uidFriend: friend.uid ?? ""),
                     builder: (context, AsyncSnapshot<MessagesModel> snapshot) {
+                      String sender = "";
+                      if(snapshot.data?.idSend == context.read<ChatsCubit>().yourOption().uid){
+                        sender  = "Bạn: ";
+                      }else{
+                        sender = "";
+                      }
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           BigText(
-                            text: snapshot.data?.messaging ?? "",
+                            text: "$sender${snapshot.data?.messaging ?? ""}",
                             color: Colors.black,
                           ),
                           BigText(
@@ -110,7 +117,7 @@ class FriendCard extends StatelessWidget {
                           ),
                         ],
                       );
-                    }),
+                    }):const SizedBox(),
 
               ],
             ),
@@ -118,59 +125,72 @@ class FriendCard extends StatelessWidget {
           SizedBox(
             width: size.height * 0.01,
           ),
-          BlocBuilder<ChatsCubit, ChatsState>(
-             buildWhen: (previous, current) => previous.isFriend != current.isFriend,
-            builder: (context, state) {
-              switch (state.isFriend) {
-                case false:
-                  return BlocBuilder<ChatsCubit, ChatsState>(
-                      buildWhen: (previous, current) {
-                        if(previous.listFriend[index].statusFriend != current.listFriend[index].statusFriend){
-                          return true;
-                        }else{
-                          return false;
-                        }
-                      },
-                      builder: (context, state) {
-                        print("rebuild status friend");
-                        int statusFriend = state.listFriend[index].statusFriend??-1;
-                        return ElevatedButton(
-                          onPressed: (){
+          ElevatedButton(
+            onPressed: (){
+              if(friend.statusFriend == 1){
+                ShowDialogWidget.openDialogConfirm(context: context, size: size, mess: "UnFriend ${friend.name}",
+                    changeConfirm: (){
+                      context.read<ChatsCubit>().unFriend(friend, index,routerCard);
+                    });
+              }else if( friend.statusFriend == 0){
+                ShowDialogWidget.openDialogConfirm(context: context, size: size, mess: "Cancel Friend ${friend.name}",
+                    changeConfirm: (){
+                      context.read<ChatsCubit>().unFriend(friend, index,routerCard);
+                    });
 
-                          },
-                          child: BigText(
-                            text: statusFriend == 1?"Bỏ Bạn":statusFriend == 0?"Đã gửi":"Kết bạn",
-                            color: Colors.white,),
-                        );
-                      }
-                  );
-                case true:
-                  return BlocBuilder<ChatsCubit, ChatsState>(
-                      buildWhen: (previous, current) {
-                        if(current.rebuildIndexList == index){
-                          return true;
-                        }else{
-                          return false;
-                        }
-                      },
-                      builder: (context, state) {
-                        print("rebuild status index peolple");
-                        int statusFriend = state.listPeople[index].statusFriend??-1;
-                        return ElevatedButton(
-                          onPressed: (){
-                            print("taped add friend");
-                            context.read<ChatsCubit>().addFriend(state.listPeople[index], index);
-                          },
-                          child: BigText(
-                            text: statusFriend == 0?"Đã gửi":"Kết bạn",
-                            color: Colors.white,),
-                        );
-                      }
-                  );
-                default:
-                  return const SizedBox();
+              }else if(friend.statusFriend == 2){
+                context.read<ChatsCubit>().acceptFriend(index);
+              }else{
+                context.read<ChatsCubit>().addFriend(friend, index,routerCard);
               }
-            }
+            },
+            child: BlocBuilder<ChatsCubit, ChatsState>(
+                buildWhen: (previous, current) => previous.isFriend != current.isFriend,
+              builder: (context, state) {
+                switch (state.isFriend) {
+                  case false:
+                    if(routerCard == 'notFriend'){
+                      return BlocBuilder<ChatsCubit, ChatsState> (
+                          buildWhen: (previous, current) => current.rebuildIndexListNotFriend == index,
+                          builder: (context, state) {
+                            int statusNotFriend = state.listNotFriend[index].statusFriend??-1;
+                            print("rebuild index card");
+                            return BigText(
+                              text: statusNotFriend == 2?"Chấp Nhận":statusNotFriend == 0?"Đã gửi":"Kết bạn",
+
+                              color: Colors.white,);
+                          }
+                      );
+                    }else{
+                      return BlocBuilder<ChatsCubit, ChatsState> (
+                          buildWhen: (previous, current) => current.rebuildIndexListFriend == index,
+                          builder: (context, state) {
+                            int statusNotFriend = state.listFriend[index].statusFriend??-1;
+                            print("rebuild index card");
+                            return BigText(
+                              text: statusNotFriend == 1?"Bỏ Bạn":statusNotFriend == 0?"Đã gửi":statusNotFriend == 2?"Chấp nhận":"Kết bạn",
+                              color: Colors.white,);
+                          }
+                      );
+                    }
+
+                  case true:
+                    return BlocBuilder<ChatsCubit, ChatsState>(
+                        buildWhen: (previous, current) => current.rebuildIndexListPeople == index,
+                      builder: (context, state) {
+                          print("rebuild index people $index");
+                          int statusFriend = state.listPeople[index].statusFriend??-1;
+                        return BigText(
+                          text: statusFriend == 0?"Đã gửi":"Kết bạn",
+                          color: Colors.white,);
+                      }
+                    );
+                  default:
+                    return const SizedBox();
+                }
+
+              }
+            ),
           ),
 
         ],

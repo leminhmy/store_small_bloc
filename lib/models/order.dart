@@ -73,20 +73,15 @@ class Order {
 
   Order.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    userId = json['user_id'];
-    orderAmount = json['order_amount'];
+    userId = json['userId'];
+    orderAmount = json['orderAmount'];
     phone = json['phone'];
     status = json['status'];
     address = json['address'];
     message = json['message'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-    if (json['order_items'] != null) {
-      orderItems = <CartModel>[];
-      json['order_items'].forEach((v) {
-        orderItems!.add(CartModel.fromJson(v));
-      });
-    }
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+    orderItems = List<Map<String, dynamic>>.from(json['orderItems']).map((e) => CartModel.fromMap(e)).toList();
   }
 
   Map<String, dynamic> toJson() {

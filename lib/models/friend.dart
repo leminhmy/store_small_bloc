@@ -7,6 +7,8 @@ class Friend {
   int? statusFriend;
   String? image;
   String? tokenMessages;
+  String? createdAt;
+  String? updatedAt;
 
   Friend({
      this.uid,
@@ -14,6 +16,8 @@ class Friend {
     this.statusFriend,
     this.image,
     this.tokenMessages,
+    this.createdAt,
+    this.updatedAt,
   });
 
   static final empty =  Friend();
@@ -27,6 +31,8 @@ class Friend {
       statusFriend: json['statusFriend'],
       image: json['image'],
       tokenMessages: json['token_messages'],
+      createdAt: json['createdAt'],
+      updatedAt: json['updatedAt'],
     );
   }
 
@@ -37,6 +43,8 @@ class Friend {
       statusFriend: snap.data().toString().contains("statusFriend")?snap['statusFriend']:null,
       image: snap['image']??"",
       tokenMessages: snap['token_messages']??"",
+      createdAt: snap['createdAt']??"",
+      updatedAt: snap['updatedAt']??"",
     );
     return friend;
   }
@@ -48,6 +56,8 @@ class Friend {
       "statusFriend": statusFriend,
       "image": image,
       "token_messages": tokenMessages,
+      "createdAt": createdAt,
+      "updatedAt": updatedAt,
     };
   }
 }

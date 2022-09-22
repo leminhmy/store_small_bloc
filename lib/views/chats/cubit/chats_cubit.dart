@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:store_small_bloc/app/utils/app_variable.dart';
 import 'package:store_small_bloc/core/type/enum.dart';
 import 'package:store_small_bloc/models/friend.dart';
 import 'package:store_small_bloc/models/messages.dart';
@@ -17,16 +18,17 @@ part 'chats_state.dart';
 
 class ChatsCubit extends Cubit<ChatsState> {
   final ChatRepository _chatRepository;
-  final AuthRepository _authRepository;
-  ChatsCubit({required AuthRepository authRepository,required ChatRepository chatRepository}) :
+  ChatsCubit({required ChatRepository chatRepository}) :
         _chatRepository=chatRepository,
-        _authRepository=authRepository,
         super(const ChatsState());
 
 
   Timer _timer = Timer.periodic(const Duration(seconds: 1), (timer) { });
   int start = 5;
   List<Friend> listAddFriend = [];
+  List<Friend> listUnFriend = [];
+  List<Friend> listAcceptFriend = [];
+  List<Friend> listPeople = [];
   void startTimer(VoidCallback callFn) {
     start = 5;
     const oneSec = Duration(seconds: 1);
@@ -45,58 +47,103 @@ class ChatsCubit extends Cubit<ChatsState> {
     );
   }
 
-  void loading() {
-    _authRepository.user.listen((event) {
-     event.then((value) {
-       if(value.isNotEmpty){
-         emit(state.copyWith(status: StatusType.loading,listFriend: []));
-         getAllFriend();
-       }else{
-         emit(state.copyWith(status: StatusType.init,listFriend: []));
-       }
-     });
+  void clearCache(){
+    listAddFriend = [];
+    listUnFriend = [];
+    listAcceptFriend = [];
+  }
+
+   runFnUnOrAddFriend(){
+
+    return startTimer(() {
+
+      print(listAddFriend.map((e) => e.toJson()).toList());
+      print("tren list addfriend");
+      print(listUnFriend.map((e) => e.toJson()).toList());
+     print("start timer");
+      if(listAddFriend.isNotEmpty){
+        print("listAddFriend is not empty");
+        _chatRepository.addFriend(your: yourOption(), newListFriend: listAddFriend);
+        listAddFriend = [];
+      }
+      if(listUnFriend.isNotEmpty){
+        print("listUnFriend is not empty");
+        _chatRepository.unFriend(your: yourOption(), newListFriend: listUnFriend);
+
+        listUnFriend = [];
+
+      }
+      if(listAcceptFriend.isNotEmpty){
+        print("listUnFriend is not empty");
+        _chatRepository.acceptFriend(your: yourOption(), newListFriend: listAcceptFriend);
+
+        listAcceptFriend = [];
+      }
     });
   }
 
-  void showAllPeopleOrShowFriend()async{
-    emit(state.copyWith(isFriend: !state.isFriend,status: StatusType.loading));
-    await Future.delayed(const Duration(seconds: 1));
-    if(state.isFriend){
-      getAllPeople();
-
-    }else{
+  void loading() {
+    if(AuthRepository.currentUser.isNotEmpty){
+      emit(state.copyWith(status: StatusType.loading,listFriend: []));
       getAllFriend();
+      getNotAllFriend();
+      getAllPeople();
+    }else{
+      emit(state.copyWith(status: StatusType.init,listFriend: []));
 
     }
 
   }
 
-  void getAllPeople() async {
-
-     _chatRepository.streamAllPeople().listen((event) {
-
-      if(state.listFriend.isNotEmpty){
-        for(int i = 0; i < state.listFriend.length; i++){
-          print("start fn $i");
-          event.removeWhere((element) => element.uid == state.listFriend[i].uid);
-        }
-        event.removeWhere((element) => element.uid == _authRepository.getUser.id);
-        print("print end");
-        emit(state.copyWith(listPeople: event,status: StatusType.loaded));
-      }else{
-        emit(state.copyWith(listPeople: event,status: StatusType.loaded));
-
-      }
-
+  void getNotAllFriend(){
+    _chatRepository.getAllInviteFriend(AuthRepository.currentUser.id).listen((event) {
+      print("data change");
+      emit(state.copyWith(status: StatusType.loaded,listNotFriend: event));
+      rebuildListNotFriend();
     });
+  }
 
+   filterListPeopleOrFriend(){
+    print("start fillter");
+     emit(state.copyWith(filterFriend: true));
+     emit(state.copyWith(filterFriend: false));
+  }
 
+  void showAllPeopleOrShowFriend()async{
+    if(state.isFriend == false){
+      rebuildListPeople();
+    }
+    emit(state.copyWith(isFriend: !state.isFriend));
+  }
+
+   getAllPeople()  {
+    return _chatRepository.streamAllPeople().listen((event) {
+
+       event.removeWhere((element) {
+         if(element.uid == AuthRepository.currentUser.id){
+           print("remove element ${element.toJson()}");
+           return true;
+         }else{
+           print("ko co remove");
+           return false;
+         }
+       });
+       listPeople = List.from(event);
+    });
   }
 
   void getAllFriend(){
-    _chatRepository.getAllFriend(_authRepository.getUser.id).listen((event) {
+    _chatRepository.getAllFriend(AuthRepository.currentUser.id).listen((event) {
+      print("get all friend");
+      for (var element in event) {
+        if(element.updatedAt == null || AppVariable.timeAgoOneDay(element.updatedAt!)){
+          print("update friend");
+          ChatRepository().updateInfoFriend(uidFriend: element.uid!,statusFriend: 1);
+        }
+      }
       print("data change");
       emit(state.copyWith(status: StatusType.loaded,listFriend: event));
+      rebuildListFriend();
 
     });
   }
@@ -106,64 +153,115 @@ class ChatsCubit extends Cubit<ChatsState> {
     emit(state.copyWith(rebuild: false));
   }
 
+  void rebuildListNotFriend(){
+    emit(state.copyWith(rebuildListNotFriend: true));
+    emit(state.copyWith(rebuildListNotFriend: false));
+  }
+  void rebuildListFriend(){
+    emit(state.copyWith(rebuildListFriend: true));
+    emit(state.copyWith(rebuildListFriend: false));
+  }
+  void rebuildListPeople(){
+    List<Friend> listPeopleFilter = List.from(listPeople);
+    List<Friend> filterList = List.from(state.listFriend + state.listNotFriend);
+    if(filterList.isNotEmpty){
+      for(int i = 0; i < filterList.length; i++){
+        listPeopleFilter.removeWhere((element) => element.uid == filterList[i].uid);
+      }
+      emit(state.copyWith(listPeople: listPeopleFilter,status: StatusType.loaded));
+    }else{
+      emit(state.copyWith(listPeople: listPeopleFilter,status: StatusType.loaded));
+    }
+  }
+
   Stream<MessagesModel> getLastMessageFriend({required String uidFriend}){
-   return _chatRepository.streamLastMessageFriend(uidUser: _authRepository.getUser.id, uidFriend: uidFriend);
+   return _chatRepository.streamLastMessageFriend(uidUser: AuthRepository.currentUser.id, uidFriend: uidFriend);
   }
 
   Stream<int> getLengthMissMessage({required String uidFriend}){
-    return _chatRepository.streamLengthMissMessageFriend(uidUser: _authRepository.getUser.id, uidFriend: uidFriend);
+    return _chatRepository.streamLengthMissMessageFriend(uidUser: AuthRepository.currentUser.id, uidFriend: uidFriend);
   }
   void getAllMessage(){
-    _chatRepository.streamMessageFriend(uidUser: _authRepository.getUser.id, uidFriend: "C9apogCJxxci0HwBSq1lhKHQt7j1").listen((event) {
+    _chatRepository.streamMessageFriend(uidUser: AuthRepository.currentUser.id, uidFriend: "C9apogCJxxci0HwBSq1lhKHQt7j1").listen((event) {
       print(event.map((e) => e.toJson()).toList());
     });
   }
 
-  void sendMessage()async{
-    MessagesModel messages = MessagesModel(
-      createdAt: DateTime.now().toString(),
-      idSend: "3txhdLarh3MoYHZMdaPPjLMqt4k1",
-      idTake: "C9apogCJxxci0HwBSq1lhKHQt7j1",
-      messaging: "hello4",
-      see: 0,
-    );
-    String status = await _chatRepository.sendMessage(messages);
-    print(status);
+
+
+
+
+
+  rebuildIndexListPeople({required Friend friend, required int index,required int setStatus}){
+    state.listPeople.elementAt(index).statusFriend = setStatus;
+    emit(state.copyWith(rebuildIndexListPeople: index));
+    emit(state.copyWith(rebuildIndexListPeople: -1));
   }
-
-
-  void addFriend(Friend friend,int index){
+  rebuildIndexListFriend({required Friend friend, required int index,required int setStatus}){
+    state.listFriend.elementAt(index).statusFriend = setStatus;
+    emit(state.copyWith(rebuildIndexListFriend: index));
+    emit(state.copyWith(rebuildIndexListFriend: -1));
+  }
+  rebuildIndexListNotFriend({required Friend friend, required int index,required int setStatus}){
+    state.listNotFriend.elementAt(index).statusFriend = setStatus;
+    emit(state.copyWith(rebuildIndexListNotFriend: index));
+    emit(state.copyWith(rebuildIndexListNotFriend: -1));
+  }
+  void addFriend(Friend friend,int index, String routeCard){
     _timer.cancel();
-      if(!state.isFriend){
-      print("start set list friend");
-      state.listFriend.elementAt(index).statusFriend = 0;
-      emit(state.copyWith(listFriend:  state.listFriend));
-    }else{
-      print("start set list people");
-      if(state.listPeople[index].statusFriend == 0){
-        state.listPeople.elementAt(index).statusFriend = null;
-        listAddFriend.remove(friend);
-      }else{
-        listAddFriend.add(friend);
-        state.listPeople.elementAt(index).statusFriend = 0;
-      }
-      rebuildIndexList(index);
+    if(routeCard == 'friend'){
+      rebuildIndexListFriend(friend: friend,index: index,setStatus: 0);
+    }else if(routeCard == 'notFriend'){
+      rebuildIndexListNotFriend(friend: friend,index: index,setStatus: 0);
+
+    }else if(routeCard == 'people'){
+      rebuildIndexListPeople(friend: friend,index: index,setStatus: 0);
     }
-    startTimer(() {
-      if(listAddFriend.isNotEmpty){
-        _chatRepository.addFriend(your: yourOption(), newListFriend: listAddFriend);
+    if(listUnFriend.isNotEmpty && listUnFriend.every((element) => element.uid == friend.uid)){
+      listUnFriend.removeWhere((element) => element.uid == friend.uid);
+    }else{
+      listAddFriend.add(friend);
 
-      }
-    },);
+    }
+    runFnUnOrAddFriend();
 
   }
 
-  rebuildIndexList(int index){
-    emit(state.copyWith(rebuildIndexList: index));
-    emit(state.copyWith(rebuildIndexList: -1));
+  void acceptFriend(int index){
+    listAcceptFriend.add(state.listNotFriend[index]);
+    state.listNotFriend.removeAt(index);
+    rebuildListNotFriend();
+    runFnUnOrAddFriend();
   }
+  void unFriend(Friend friend,int index,String routeCard){
+    _timer.cancel();
+    if(routeCard == 'friend'){
+      state.listFriend.removeWhere((element) => element.uid == friend.uid);
+      rebuildListFriend();
+    }else if(routeCard == 'notFriend'){
+      rebuildIndexListNotFriend(friend: friend,index: index,setStatus: -1);
+
+    }else if(routeCard == 'people'){
+      rebuildIndexListPeople(friend: friend,index: index,setStatus: -1);
+    }
+    if(listAddFriend.isNotEmpty && listAddFriend.every((element) => element.uid == friend.uid)){
+      print("true ko");
+      listAddFriend.removeWhere((element) => element.uid == friend.uid);
+    }else{
+      print("false ko");
+      listUnFriend.add(friend);
+
+    }
+    runFnUnOrAddFriend();
+
+  }
+
+
+
+
 
   Friend yourOption(){
-    return Friend.fromJson(_authRepository.getUser.toJson());
+    Friend yourCard = Friend.fromJson(AuthRepository.currentUser.toJson());
+    return yourCard;
   }
 }

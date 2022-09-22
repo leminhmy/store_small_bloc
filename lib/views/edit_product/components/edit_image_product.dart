@@ -36,7 +36,6 @@ class ShowBottomEditImage{
                 create: (context) => EditProductCubit(products: product,productRepository: ProductRepository()),
                 child: BlocListener<EditProductCubit, EditProductState>(
                   listener: (context, state) {
-                    ShowSnackBarWidget.showSnackBarDefault(context: context, text: state.messError);
                     ShowDialogWidget.showDialogDefaultBloc(context: context,status: state.status,text: state.messError);
                   },
                   child: BlocBuilder<EditProductCubit, EditProductState>(

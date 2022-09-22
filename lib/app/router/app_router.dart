@@ -18,7 +18,9 @@ import 'package:store_small_bloc/views/home/view/home_page.dart';
 import 'package:store_small_bloc/views/login/login.dart';
 import 'package:store_small_bloc/views/register/view/register_view.dart';
 
+import '../../models/friend.dart';
 import '../../views/home/view/home_view.dart';
+import '../../views/notification/view/notification_view.dart';
 
 class AppRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -61,10 +63,10 @@ class AppRouter {
         }
         return _errRoute();
       case RouteName.messaging:
-        if (args != null && args is UserModel) {
+        if (args != null && args is Friend) {
           return PageTransition(
               child: ChatMessingView(
-                userModel: args,
+                friend: args,
               ),
               type: PageTransitionType.rightToLeft);
         }
@@ -116,6 +118,14 @@ class AppRouter {
           return PageTransition(
               child:   DetailCartOrderView(
                 order: args,
+              ),
+              type: PageTransitionType.rightToLeft);
+        }
+        return _errRoute();
+      case RouteName.notification:
+        if (args != null && args is String) {
+          return PageTransition(
+              child:  const NotificationView(
               ),
               type: PageTransitionType.rightToLeft);
         }

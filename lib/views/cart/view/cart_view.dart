@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:store_small_bloc/repositories/map/map_repository.dart';
 import 'package:store_small_bloc/views/account/cubit/account_cubit.dart';
 import 'package:store_small_bloc/views/cart/cart.dart';
+import 'package:store_small_bloc/views/google_map/google_map.dart';
 import 'package:store_small_bloc/views/widget/show_dialog.dart';
 import 'package:store_small_bloc/views/widget/show_snack_bar.dart';
 

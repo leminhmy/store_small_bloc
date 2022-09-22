@@ -7,21 +7,22 @@ import '../../widget/big_text.dart';
 
 class MessagesCart extends StatelessWidget {
   const MessagesCart({
-    Key? key, required this.messagesModel,
+    Key? key, required this.messagesModel, required this.uidUser,
   }) : super(key: key);
 
   final MessagesModel messagesModel;
+  final String uidUser;
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: size.height * 0.01),
-      child: Container()/*Row(
-        mainAxisAlignment: messagesModel.idSend == userId?MainAxisAlignment.end:MainAxisAlignment.start,
+      child: Row(
+        mainAxisAlignment: messagesModel.idSend == uidUser?MainAxisAlignment.end:MainAxisAlignment.start,
         children: [
           Column(
-            crossAxisAlignment: messagesModel.idSend == userId?CrossAxisAlignment.end:CrossAxisAlignment.start,
+            crossAxisAlignment: messagesModel.idSend == uidUser?CrossAxisAlignment.end:CrossAxisAlignment.start,
             children: [
               messagesModel.messaging!= ""?Container(
                   margin: EdgeInsets.only(top: size.height * 0.01),
@@ -43,7 +44,7 @@ class MessagesCart extends StatelessWidget {
                   borderRadius:
                   BorderRadius.circular(size.height * 0.01),
                   image: DecorationImage(
-                      image: AssetImage(messagesModel.image!),
+                      image: NetworkImage(messagesModel.image!),
                       fit: BoxFit.cover),
                 ),
               ):Container(),
@@ -51,7 +52,7 @@ class MessagesCart extends StatelessWidget {
             ],
           ),
         ],
-      ),*/,
+      ),
     );
   }
 }

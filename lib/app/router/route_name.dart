@@ -12,4 +12,5 @@ class RouteName {
   static const String profile = '/profile';
   static const String detailOrder = '/detail-order';
   static const String detailOrderSetting = '/detail-order-setting';
+  static const String notification = '/notification';
 }

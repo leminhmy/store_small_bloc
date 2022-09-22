@@ -15,16 +15,14 @@ import '../../../core/type/enum.dart';
 part 'cart_state.dart';
 
 class CartCubit extends Cubit<CartState> {
-  final AuthRepository _authRepository;
   final OrderRepository _orderRepository;
   CartCubit({required AuthRepository authRepository, required OrderRepository orderRepository})
-      :_authRepository = authRepository,
+      :
         _orderRepository = orderRepository,
         super( const CartState());
 
 
   Future<void> loadingCart()async{
-    _authRepository.user.listen((event) { });
     try{
       emit(state.copyWith(status: StatusType.loading));
       await Future<void>.delayed(const Duration(seconds: 1));
@@ -93,6 +91,10 @@ class CartCubit extends Cubit<CartState> {
     emit(state.copyWith(indexCart: -1));
   }
 
+  void printOrder(){
+    print(orderOption("address").toJson());
+  }
+
   int getTotalPriceListCart(){
     int totalPrice = 0;
     for (var element in state.listCart) {
@@ -103,9 +105,10 @@ class CartCubit extends Cubit<CartState> {
 
   void checkOutOrder(String address)async{
     emit(state.copyWith(messError: ""));
-    if(_authRepository.getUser.isNotEmpty && address != "" && state.listCart.isNotEmpty){
+    Order order = orderOption(address);
+    if(AuthRepository.currentUser.isNotEmpty && address != "" && state.listCart.isNotEmpty){
       emit(state.copyWith(messError: "BeginOrder",status: StatusType.loading));
-      await _orderRepository.addOrder(orderOption(address)).then((value) {
+      await _orderRepository.addOrder(order).then((value) {
         if(value == "Success"){
           emit(state.copyWith(status: StatusType.loaded,listCart: [],messError: "Order Success"));
           rebuildListCart();
@@ -113,7 +116,7 @@ class CartCubit extends Cubit<CartState> {
           emit(state.copyWith(status: StatusType.error,messError: value));
         }
       });
-    }else if(_authRepository.getUser.isEmpty){
+    }else if(AuthRepository.currentUser.isEmpty){
       emit(state.copyWith(messError: "NoAccount",status: StatusType.init),);
     }
     else if(state.listCart.isEmpty){
@@ -128,8 +131,8 @@ class CartCubit extends Cubit<CartState> {
 
   Order orderOption(String address) => Order(
     status: 1,
-    userId: _authRepository.getUser.id,
-    phone: _authRepository.getUser.phone,
+    userId: AuthRepository.currentUser.id,
+    phone: AuthRepository.currentUser.phone,
     address: address,
     orderAmount: getTotalPriceListCart(),
     createdAt: DateTime.now().toString(),

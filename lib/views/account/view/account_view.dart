@@ -7,6 +7,8 @@ import 'package:store_small_bloc/views/register/view/register_view.dart';
 import '../../../core/type/enum.dart';
 import '../../login/view/login_view.dart';
 import '../../widget/app_loading_widget.dart';
+import '../../widget/show_dialog.dart';
+import '../../widget/show_snack_bar.dart';
 
 
 
@@ -15,23 +17,24 @@ class AccountView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AccountCubit, AccountState>(
-        buildWhen: (previous, current) =>
-        previous.status != current.status,
-      builder: (context, state) {
-          print(state.status);
-        switch (state.status) {
-          case StatusType.init:
-            return const RegisterView();
-          case StatusType.loading:
-            return const AppLoadingWidget();
-          case StatusType.loaded:
-            return const AccountPage();
-          default:
-            return const SizedBox();
+    return  BlocProvider<AccountCubit>(
+      create: (BuildContext context) => AccountCubit()..loadingAccount(),
+      child: BlocBuilder<AccountCubit, AccountState>(
+          buildWhen: (previous, current) =>previous.status != current.status,
+        builder: (context, state) {
+            print("account change state");
+          switch (state.status) {
+            case StatusType.init:
+              return const LoginView();
+            case StatusType.loading:
+              return const AppLoadingWidget();
+            case StatusType.loaded:
+              return const AccountPage();
+            default:
+              return const SizedBox();
+          }
         }
-        return const AccountPage();
-      }
+      ),
     );
   }
 }

@@ -45,8 +45,9 @@ class ShowBottomSheetEditProduct {
                 create: (context) => EditProductCubit(products: product,productRepository: ProductRepository()),
                 child: BlocListener<EditProductCubit, EditProductState>(
                   listener: (context, state) {
-                    ShowSnackBarWidget.showSnackBarDefault(context: context, text: state.messError);
-                    ShowDialogWidget.showDialogDefaultBloc(context: context,status: state.status,text: state.messError);
+                    if(state.messError != ""){
+                      ShowDialogWidget.showDialogDefaultBloc(context: context,status: state.status,text: state.messError);
+                    }
                   },
                   child: BlocBuilder<EditProductCubit, EditProductState>(
                       buildWhen: (previousState, state) {
@@ -192,18 +193,27 @@ class BuildHeaderWidget extends StatelessWidget {
                 SizedBox(
                   height: size.height * 0.01,
                 ),
-                GestureDetector(
-                  onTap: () {
-                    ShowBottomSheetEditProduct.openDialogConfirm(
-                        context: context, size: size);
-                  },
-                  child: ButtonBorderRadius(
-                      widget: Container(
-                          alignment: Alignment.center,
-                          child: BigText(
-                            text: "Delete Product",
-                            color: AppColors.mainColor,
-                          ))),
+                BlocBuilder<EditProductCubit, EditProductState>(
+                  builder: (context, state) {
+                    return GestureDetector(
+                      onTap: () {
+                        ShowDialogWidget.openDialogConfirm(context: context, size: size, mess: "You want delete product ${state.product.name}", changeConfirm: (){
+                              context.read<EditProductCubit>().deleteProduct().then((value) {
+                                if(value == ""){
+                                  context.read<FilterProductCubit>().deleteProduct(state.product);
+                                }
+                              });
+                        });
+                      },
+                      child: ButtonBorderRadius(
+                          widget: Container(
+                              alignment: Alignment.center,
+                              child: BigText(
+                                text: "Delete Product",
+                                color: AppColors.mainColor,
+                              ))),
+                    );
+                  }
                 ),
                 SizedBox(
                   height: size.height * 0.01,

@@ -20,7 +20,6 @@ class AddProductPage extends StatelessWidget {
     Size size = MediaQuery.of(context).size;
     return BlocListener<AddProductCubit, AddProductState>(
       listener: (context, state) {
-        ShowSnackBarWidget.showSnackBarDefault(context: context, text: state.messError);
         ShowDialogWidget.showDialogDefaultBloc(context: context,status: state.status,text: state.messError);
 
       },

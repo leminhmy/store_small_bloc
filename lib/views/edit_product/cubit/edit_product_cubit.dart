@@ -20,13 +20,25 @@ class EditProductCubit extends Cubit<EditProductState> {
 
 
   void onTapEvent(){
-    bool change = !state.onTapEvent;
-    emit(state.copyWith(onTapEvent: change));
+    emit(state.copyWith(onTapEvent: !state.onTapEvent,messError: ""));
+  }
+
+  Future<String> deleteProduct()async{
+    emit(state.copyWith(status: StatusType.loading,messError: "Deleting..."));
+    print(state.product.toJson());
+    String status = await _productRepository.deleteProduct(state.product);
+    if(status == ""){
+      emit(state.copyWith(status: StatusType.loaded,messError: "Delete Success"));
+      return "";
+    }else{
+      emit(state.copyWith(status: StatusType.error,messError: status));
+      return status;
+    }
   }
 
   void editImageProduct({required List<String> listImgUrl,required List<XFile> newListImgXFile}) async
   {
-    emit(state.copyWith(status: StatusType.loading,messError: ""));
+    emit(state.copyWith(status: StatusType.loading,messError: "Editing..."));
     List<String> listImgUrlUpload = [];
     List<String> listError = [];
     if(newListImgXFile.isNotEmpty){
@@ -55,7 +67,7 @@ class EditProductCubit extends Cubit<EditProductState> {
   }
 
   void updateProduct(ProductsModel product) async{
-    emit(state.copyWith(status: StatusType.loading,messError: ""));
+    emit(state.copyWith(status: StatusType.loading,messError: "Uploading..."));
     Map<String, dynamic> jsonProduct = product.toJson();
     jsonProduct.removeWhere((key, value) => value == null || key == 'listImg');
     String messError = await _productRepository.updateProduct(jsonProduct: jsonProduct);

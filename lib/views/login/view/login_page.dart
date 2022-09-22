@@ -30,188 +30,169 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
 
     Size size = MediaQuery.of(context).size;
-    return BlocListener<LoginCubit, LoginState>(
-      listener: (context, state) async {
-        if(state.errorMessage != ""){
-          if(state.errorMessage.contains("Email") || state.errorMessage.contains("Password")){
-            ShowSnackBarWidget.showSnackCustom(context: context,isError: true,text: state.errorMessage);
-          }else{
-            ShowDialogWidget.showDialogDefaultBloc(context: context, status: state.status, text: state.errorMessage);
-            if(state.errorMessage == "Login Success"){
-              await Future<void>.delayed(const Duration(seconds: 3),(){
-                Navigator.pushNamed(
-                    context, RouteName.initial,
-                    arguments: "");
-                context.read<AccountCubit>().loadingAccount();
-
-              });
-            }
-          }
-        }
-
-      },
-      child: Scaffold(
-          backgroundColor: Colors.white,
-          body: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    height: size.height * 0.3,
-                    width: size.height * 0.2,
-                    decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        image:  DecorationImage(
-                          image: AssetImage("assets/images/a2.png"),
-                          fit: BoxFit.contain,
-                        )
-                    ),
-                  ),
+    return Scaffold(
+        backgroundColor: Colors.white,
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                margin: EdgeInsets.only(top: size.height * 0.03),
+                height: size.height * 0.3,
+                alignment: Alignment.topRight,
+                decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    image:  DecorationImage(
+                      image: AssetImage("assets/images/a2.png"),
+                      fit: BoxFit.contain,
+                    )
                 ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: size.height * 0.02),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      BigText(
-                        text: "Hello",
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: size.height * 0.065,
-                      ),
-                      SizedBox(
-                        height: size.height * 0.005,
-                      ),
-                      RichText(
+                child: IconButton(onPressed: () => Navigator.pushNamed(
+                    context, RouteName.initial,
+                    arguments: ""),icon: const Icon(Icons.home,color: Colors.green,),iconSize: 30),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: size.height * 0.02),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    BigText(
+                      text: "Hello",
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: size.height * 0.065,
+                    ),
+                    SizedBox(
+                      height: size.height * 0.005,
+                    ),
+                    RichText(
+                        text: TextSpan(
+                            text: "Sign into your account",
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                              fontSize: size.height * 0.02,
+                            ))),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: size.height * 0.03,
+              ),
+              //input signIn
+              Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    AppTextField(
+                      onSave: (value) => emailController.text = value!,
+                      textFieldController: emailController,
+                      hintText: "Email",
+                      textInputType: TextInputType.emailAddress,
+                      prefixIcon: Icons.email,
+                      colorIcon: AppColors.mainColor,
+                    ),
+                    SizedBox(
+                      height: size.height * 0.02,
+                    ),
+                    StatefulBuilder(
+                        builder: (context, setState2) {
+                          return AppTextField(
+                            onSave: (value) => passwordController.text = value!,
+                            suffixIcon: IconButton(
+                              onPressed: (){
+                                setState2(() {
+                                  isShowVisibility =!isShowVisibility;
+
+                                });
+                              },
+                              icon: isShowVisibility?const Icon(Icons.visibility_off):const Icon(Icons.visibility),
+                            ),
+                            isObscure: isShowVisibility,
+                            textFieldController: passwordController,
+                            hintText: "Password",
+                            prefixIcon: Icons.password,
+                            colorIcon: AppColors.mainColor,
+                          );
+                        }
+                    ),
+                    SizedBox(
+                      height: size.height * 0.02,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(right: size.height * 0.02),
+                      child: RichText(
                           text: TextSpan(
                               text: "Sign into your account",
                               style: TextStyle(
                                 color: Colors.grey[500],
                                 fontSize: size.height * 0.02,
                               ))),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: size.height * 0.03,
-                ),
-                //input signIn
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      AppTextField(
-                        onSave: (value) => emailController.text = value!,
-                        textFieldController: emailController,
-                        hintText: "Email",
-                        textInputType: TextInputType.emailAddress,
-                        prefixIcon: Icons.email,
-                        colorIcon: AppColors.mainColor,
-                      ),
-                      SizedBox(
-                        height: size.height * 0.02,
-                      ),
-                      StatefulBuilder(
-                          builder: (context, setState2) {
-                            return AppTextField(
-                              onSave: (value) => passwordController.text = value!,
-                              suffixIcon: IconButton(
-                                onPressed: (){
-                                  setState2(() {
-                                    isShowVisibility =!isShowVisibility;
-
-                                  });
-                                },
-                                icon: isShowVisibility?const Icon(Icons.visibility_off):const Icon(Icons.visibility),
-                              ),
-                              isObscure: isShowVisibility,
-                              textFieldController: passwordController,
-                              hintText: "Password",
-                              prefixIcon: Icons.password,
-                              colorIcon: AppColors.mainColor,
-                            );
-                          }
-                      ),
-                      SizedBox(
-                        height: size.height * 0.02,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: size.height * 0.02),
-                        child: RichText(
-                            text: TextSpan(
-                                text: "Sign into your account",
-                                style: TextStyle(
-                                  color: Colors.grey[500],
-                                  fontSize: size.height * 0.02,
-                                ))),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: size.height * 0.05,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Column(
-                      children: [
-                        GestureDetector(
-                          onTap: (){
-                            context.read<LoginCubit>().logInWithCredentials(emailController.text, passwordController.text);
-                          },
-                          child: ButtonBorderRadius(
-                            widget: Container(
-                              margin: EdgeInsets.symmetric(horizontal: size.height * 0.02),
-                              child: BigText(
-                                  text: "Sign In",
-                                  color: Colors.white,
-                                  fontSize: size.height * 0.026),
-                            ),
-                            colorBackground: AppColors.mainColor,
-                            borderRadius: size.height * 0.026,
-                          ),
-                        ),
-                        SizedBox(
-                          height: size.height * 0.05,
-                        ),
-                        RichText(
-                          text: TextSpan(
-                              text: "Don't have an account?",
-                              style: TextStyle(
-                                color: Colors.grey[500],
-                                fontSize: size.height * 0.02,
-                              ),
-                              children: [
-                                TextSpan(
-                                  recognizer: TapGestureRecognizer()..onTap=()=>Navigator.pushNamed(
-                              context, RouteName.signUp,
-                              arguments: ""),
-                                  text: "Create",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: size.height * 0.02,
-                                      fontWeight: FontWeight.bold
-                                  ),
-                                )
-                              ]
-                          ),
-
-                        ),
-
-                      ],
                     ),
-
-
                   ],
                 ),
+              ),
+              SizedBox(
+                height: size.height * 0.05,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Column(
+                    children: [
+                      GestureDetector(
+                        onTap: (){
+                          context.read<LoginCubit>().logInWithCredentials(emailController.text, passwordController.text);
+                        },
+                        child: ButtonBorderRadius(
+                          widget: Container(
+                            margin: EdgeInsets.symmetric(horizontal: size.height * 0.02),
+                            child: BigText(
+                                text: "Sign In",
+                                color: Colors.white,
+                                fontSize: size.height * 0.026),
+                          ),
+                          colorBackground: AppColors.mainColor,
+                          borderRadius: size.height * 0.026,
+                        ),
+                      ),
+                      SizedBox(
+                        height: size.height * 0.05,
+                      ),
+                      RichText(
+                        text: TextSpan(
+                            text: "Don't have an account?",
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                              fontSize: size.height * 0.02,
+                            ),
+                            children: [
+                              TextSpan(
+                                recognizer: TapGestureRecognizer()..onTap=()=>Navigator.pushNamed(
+                                    context, RouteName.signUp,
+                                    arguments: ""),
+                                text: "Create",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: size.height * 0.02,
+                                    fontWeight: FontWeight.bold
+                                ),
+                              )
+                            ]
+                        ),
 
-              ],
-            ),
-          )
-      ),
+                      ),
+
+                    ],
+                  ),
+
+
+                ],
+              ),
+
+            ],
+          ),
+        )
     );
   }
 }

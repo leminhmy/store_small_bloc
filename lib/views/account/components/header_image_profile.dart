@@ -80,8 +80,8 @@ class _HeaderImageProfileState extends State<HeaderImageProfile> {
             onTap: (){
               openDialogUpdateUser(context: context,size: size,onPressSave: (){
                 context.read<AccountCubit>().updateAccount(name: name.text, phone: phone.text,image: _imageAvatar);
-                // print(widget.yourUser.toJson());
-              });
+              }
+              );
             },
             child: CircleAvatar(
               maxRadius: 25,
@@ -93,6 +93,7 @@ class _HeaderImageProfileState extends State<HeaderImageProfile> {
   }
   Future openDialogUpdateUser(
       {required BuildContext context, required Size size, required VoidCallback onPressSave}){
+
     return
       showDialog(
           context: context,
@@ -100,65 +101,67 @@ class _HeaderImageProfileState extends State<HeaderImageProfile> {
 
             return StatefulBuilder(
                 builder: (context, setStateDialog) {
+                  return GestureDetector(
+                    onTap: () => FocusScope.of(context).unfocus(),
+                    child: AlertDialog(
+                      insetPadding: EdgeInsets.symmetric(
+                          horizontal: size.height * 0.01),
+                      clipBehavior:
+                      Clip.antiAliasWithSaveLayer,
+                      title: const Text('Chỉnh Sửa Thông Tin'),
+                      content: SizedBox(
+                        height: size.height * 0.4,
+                        width: size.width * 0.9,
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                IconButton(onPressed: (){
+                                  imageSelectGallery(setStateDialog);
 
-                  return AlertDialog(
-                    insetPadding: EdgeInsets.symmetric(
-                        horizontal: size.height * 0.01),
-                    clipBehavior:
-                    Clip.antiAliasWithSaveLayer,
-                    title: const Text('Chỉnh Sửa Thông Tin'),
-                    content: SizedBox(
-                      height: size.height * 0.4,
-                      width: size.width * 0.9,
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              IconButton(onPressed: (){
-                                imageSelectGallery(setStateDialog);
-
-                              }, icon: Icon(Icons.image,size: size.height * 0.026,color: AppColors.mainColor,)),
-                              _imageAvatar !=null?CircleAvatar(
-                                maxRadius:size.height * 0.075,
-                                backgroundColor: AppColors.mainColor,
-                                backgroundImage: FileImage(
-                                    File(_imageAvatar!.path)
+                                }, icon: Icon(Icons.image,size: size.height * 0.026,color: AppColors.mainColor,)),
+                                _imageAvatar !=null?CircleAvatar(
+                                  maxRadius:size.height * 0.075,
+                                  backgroundColor: AppColors.mainColor,
+                                  backgroundImage: FileImage(
+                                      File(_imageAvatar!.path)
+                                  ),
+                                ):CircleAvatar(
+                                  maxRadius:size.height * 0.075,
+                                  backgroundColor: AppColors.mainColor,
+                                  backgroundImage: const AssetImage('assets/images/no_image.png'),
                                 ),
-                              ):CircleAvatar(
-                                maxRadius:size.height * 0.075,
-                                backgroundColor: AppColors.mainColor,
-                                backgroundImage: AssetImage('assets/images/no_image.png'),
-                              ),
-                              IconButton(onPressed: (){
-                                imageSelectCamera(setStateDialog);
+                                IconButton(onPressed: (){
+                                  imageSelectCamera(setStateDialog);
 
-                              }, icon: Icon(Icons.camera_alt_outlined,size: size.height * 0.026,color: AppColors.mainColor,)),
-                            ],
-                          ),
-                          SizedBox(height: size.height * 0.02,),
-                          EditTextForm(
-                              onSave: (save) => name.text = save!,
-                              controller: name,
-                              labelText: "Name"),
-                          SizedBox(height: size.height * 0.01,),
-                          EditTextForm(
-                              onSave: (save) => phone.text = save!,
-                              controller: phone,
-                              textInputType: TextInputType.number,
-                              labelText: "Phone"),
-                          const Spacer(),
-                          GestureDetector(
-                            onTap: onPressSave,
-                            child: ButtonBorderRadius(
-                              widget: BigText(
-                                text: "Save",
-                                color: Colors.white,
-                              ),
-                              colorBackground: AppColors.mainColor,
+                                }, icon: Icon(Icons.camera_alt_outlined,size: size.height * 0.026,color: AppColors.mainColor,)),
+                              ],
                             ),
-                          ),
-                        ],
+                            SizedBox(height: size.height * 0.02,),
+                            EditTextForm(
+                                onSave: (save) => name.text = save!,
+                                controller: name,
+                                labelText: "Name"),
+                            SizedBox(height: size.height * 0.01,),
+                            EditTextForm(
+                                onSave: (save) => phone.text = save!,
+                                controller: phone,
+                                textInputType: TextInputType.number,
+                                labelText: "Phone"),
+                            const Spacer(),
+                            GestureDetector(
+                              onTap: onPressSave,
+                              child: ButtonBorderRadius(
+                                widget: BigText(
+                                  text: "Save",
+                                  color: Colors.white,
+                                ),
+                                colorBackground: AppColors.mainColor,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );

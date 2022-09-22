@@ -15,6 +15,7 @@ class AppVariable{
     return number;
 
   }
+
   static String timeFormat(String time) {
     DateTime parseDate = DateFormat("yyyy-MM-dd HH:mm:ss")
         .parse(time);
@@ -38,6 +39,16 @@ class AppVariable{
 
   }
 
+  static bool timeAgoOneDay(String time){
+    DateTime timeInput = DateTime.parse(time);
+    DateTime timeNow = DateTime.now();
+    Duration diff = timeNow.difference(timeInput);
+    if(diff.inDays >= 1){
+      return true;
+    }else{
+      return false;
+    }
+  }
 
   static ScaffoldMessengerState showErrorSnackBar(BuildContext context, String? error){
    return ScaffoldMessenger.of(context)

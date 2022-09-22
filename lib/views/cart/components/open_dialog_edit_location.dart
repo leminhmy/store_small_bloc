@@ -40,7 +40,7 @@ class _WidgetEditLocationState extends State<WidgetEditLocation> {
       backgroundColor: Colors.transparent,
       body: Center(
         child: Container(
-          height: size.height * 0.3,
+          height: size.height * 0.40,
           margin: const EdgeInsets.symmetric(horizontal: 20),
           padding: const EdgeInsets.symmetric(horizontal: 20),
           decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(20)),

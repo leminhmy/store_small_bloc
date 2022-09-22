@@ -56,6 +56,8 @@ dependencies:
   firebase_auth: ^3.6.3
   google_maps_flutter: ^2.1.1
   geolocator: ^8.0.1
+  geocoding: ^2.0.5
+  firebase_messaging:
 
 dev_dependencies:
   flutter_test:
