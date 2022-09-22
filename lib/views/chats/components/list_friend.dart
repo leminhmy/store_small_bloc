@@ -34,7 +34,6 @@ class ListFriend extends StatelessWidget {
                 itemCount: listFriend.length,
                 physics: const BouncingScrollPhysics(),
                 itemBuilder: (context, index) {
-
                   return GestureDetector(
                     onTap: () => Navigator.pushNamed(
                         context, RouteName.messaging,

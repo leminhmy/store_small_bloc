@@ -142,7 +142,7 @@ class ChatsCubit extends Cubit<ChatsState> {
         }
       }
       print("data change");
-      emit(state.copyWith(status: StatusType.loaded,listFriend: event));
+      emit(state.copyWith(listFriend: event));
       rebuildListFriend();
 
     });
@@ -236,7 +236,7 @@ class ChatsCubit extends Cubit<ChatsState> {
   void unFriend(Friend friend,int index,String routeCard){
     _timer.cancel();
     if(routeCard == 'friend'){
-      state.listFriend.removeWhere((element) => element.uid == friend.uid);
+      state.listFriend.removeAt(index);
       rebuildListFriend();
     }else if(routeCard == 'notFriend'){
       rebuildIndexListNotFriend(friend: friend,index: index,setStatus: -1);

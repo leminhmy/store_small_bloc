@@ -167,7 +167,20 @@ class _ChatsPageState extends State<ChatsPage> {
           print("rebuild list friend or people");
           switch (state.isFriend) {
             case false:
-              return ListFriend(listFriend: listFilter);
+              return BlocBuilder<ChatsCubit, ChatsState>(
+                  buildWhen: (previous, current){
+                    if(previous.rebuildListFriend != current.rebuildListFriend){
+                      listFriend = current.listFriend;
+                      listFilter = current.listFriend;
+                      return true;
+                    }else{
+                      return false;
+                    }
+                  },
+                builder: (context, state) {
+                  return ListFriend(listFriend: listFilter);
+                }
+              );
             case true:
               return ListPeople(listFriend: listFilter);
             default:
